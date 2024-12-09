@@ -1,0 +1,5 @@
+DB_USERNAME="root"
+DB_PASSWORD="root"
+DB_HOSTNAME="localhost"
+DB_PORT="3306"
+DATABASE_NAME="smart_home_app"
