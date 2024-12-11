@@ -1,8 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship,declarative_base
 
-#povezi usere sa devices(kao mogu odrediti vrstu koja im je dodeljena na osonovu role) , zbog 4 joina
+
 Base=declarative_base()
+
+user_location = Table(
+    'user_location', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.user_id'), primary_key=True),
+    Column('location_id', Integer, ForeignKey('locations.location_id'), primary_key=True)
+)
+
+
 class User(Base):
     __tablename__='users'
     user_id: int = Column(Integer,primary_key=True,index=True,nullable=False)
@@ -12,6 +20,8 @@ class User(Base):
     password: str=Column(String(80),nullable=False)
     role_id: int=Column(Integer, ForeignKey("roles.role_id", ondelete="CASCADE"), nullable=False)
     role=relationship("Role")
+    locations = relationship('Location', secondary=user_location, back_populates='users')
+
 
 class Role(Base):
     __tablename__ = 'roles'
@@ -27,8 +37,8 @@ class Device(Base):
     temperature: float =Column(Float)
     device_type: str = Column(String(80))  # Column to distinguish subclasses
     __mapper_args__ = {
-        'polymorphic_identity': 'device',  # Default identifier
-        'polymorphic_on': device_type     # Determines the type of the subclass
+        'polymorphic_identity': 'device', 
+        'polymorphic_on': device_type    
     }
     location=relationship("Location")
 
@@ -36,6 +46,8 @@ class Location(Base):
     __tablename__='locations'
     location_id: int= Column(Integer, primary_key=True, index=True)
     name: str= Column(String(80),nullable=False)
+    users = relationship('User', secondary=user_location, back_populates='locations')
+
 
 
 class Thermostat(Device):
@@ -56,7 +68,4 @@ class DoorLock(Device):
 class Oven(Device):
      __mapper_args__ = {'polymorphic_identity': 'oven'} 
     # temperature: float =Column(Float, nullable=False)
-
-
-#DATABASE_URL = "mysql+pymysql://root:root@localhost:3306/baze_podataka"
 
