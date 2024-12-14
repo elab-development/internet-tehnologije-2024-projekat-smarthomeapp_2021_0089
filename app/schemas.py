@@ -16,3 +16,8 @@ class UserResponse(BaseModel):
     lastname: str
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+#LOGIN KORISNIKA
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str

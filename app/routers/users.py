@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from db import get_db
-import models,schemas,utils
+from app.db import get_db
+import app.models as models
+import app.schemas as schemas
+import app.utils as utils
 from sqlalchemy.orm import Session
 
 router = APIRouter(
@@ -45,4 +47,33 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
+
+
+#LOGIN KORISNIKA
+from fastapi.security import OAuth2PasswordRequestForm #klasa koja pomaze u citanju i koriscenju podataka za login
+
+@router.post("/login", response_model=schemas.TokenResponse)
+def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # Korisnika tražimo u bazi na osnovu email-a
+    user = db.query(models.User).filter(models.User.mail == form_data.username).first()
+
+    # Ako korisnik nije pronađen, vraćamo grešku
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Uneli ste nepostojeci mail",
+        )
+
+    # Proveravamo da li je uneta lozinka ispravna
+    if not utils.verify(form_data.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Lozinka nije ispravna",
+        )
+
+    # Generišemo JWT token za autentifikaciju
+    access_token = utils.create_access_token(data={"user_id": user.user_id})
+
+    # Vraćamo token korisniku
+    return {"access_token": access_token, "token_type": "bearer"}
 
