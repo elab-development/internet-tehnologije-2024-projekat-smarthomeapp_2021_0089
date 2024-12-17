@@ -77,3 +77,6 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
     # Vraćamo token korisniku
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+
+
