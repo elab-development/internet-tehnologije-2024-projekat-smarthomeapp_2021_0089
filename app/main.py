@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from app.routers import users
+from routers import users
+from routers import files
+from routers import devices
 
 app = FastAPI()
 
