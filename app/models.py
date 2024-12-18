@@ -66,6 +66,6 @@ class DoorLock(Device):
     #status: str=Column(String,nullable=False) #locked,unlocked
 
 class Oven(Device):
-     __mapper_args__ = {'polymorphic_identity': 'oven'} 
+    __mapper_args__ = {'polymorphic_identity': 'oven'} 
     # temperature: float =Column(Float, nullable=False)
 
