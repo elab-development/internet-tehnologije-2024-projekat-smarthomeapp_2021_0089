@@ -6,6 +6,8 @@ from routers import devices
 app = FastAPI()
 
 app.include_router(users.router)
+app.include_router(files.router)
+app.include_router(devices.router)
 
 
 @app.get("/")
