@@ -1,0 +1,42 @@
+/* Sidebar.css */
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 15px;
+    font-size: 24px;
+    width: auto;
+    height: 60px;
+    margin-top: 0;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+  
+  .sidebar button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 30px;
+    color: #333;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .sidebar button:hover {
+    color: #dfb8cf;
+  }
+  
+  .sidebar button:focus {
+    outline: none;
+  }
+  
+  /* Stil za aktivno dugme */
+  .sidebar button.active {
+    color: #dfb8cf; /* Aktivna boja */
+    transform: scale(1.1); 
+  }
+  
