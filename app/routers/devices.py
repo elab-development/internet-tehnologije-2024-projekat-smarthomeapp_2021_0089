@@ -29,26 +29,39 @@ def get_devices(
     try:
         # Inicijalni upit
         query = db.query(models.Device)
+
         # Filtriranje prema lokaciji
         if location_id is not None:
-            query = query.join(models.Location).filter(models.Location.id == location_id)
+            query = query.join(models.Location).filter(models.Location.location_id == location_id)
+
         # Filtriranje prema tipu uredjaja
         if device_type is not None:
-            query = query.filter(models.Device.type == device_type)
+            query = query.filter(models.Device.device_type == device_type)
+
         # Sortiranje prema tipu uredjaja
         if sort == "asc":
             query = query.order_by(asc(models.Device.device_type))
         elif sort == "desc":
             query = query.order_by(desc(models.Device.device_type))
+
         # Paginacija
         offset = (page - 1) * page_size
+        total_devices = query.count()  # Ukupan broj uredjaja
         devices = query.offset(offset).limit(page_size).all()
-         # Ukupno pronadjenih uredjaja
-        total_devices = query.count()
+
         # Vracanje rezultata
-        return {"page": page, "page_size": page_size, "total_devices": total_devices, "data": devices} #vraca se JSON
+        return {
+            "page": page,
+            "page_size": page_size,
+            "total_devices": total_devices,
+            "data": devices,
+        }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Greska prilikom pronalazenja uredjaja: {str(e)}") from e
+        raise HTTPException(
+            status_code=500, detail=f"Greska prilikom pronalazenja uredjaja: {str(e)}"
+        ) from e
+
 # primer: Paginacija bez filtriranja:GET /devices/?page=1&page_size=5
 #Filtriranje po lokaciji i paginacija:GET /devices/?location_id=2&page=1&page_size=5
 #Sortiranje i filtriranje:GET /devices/?device_type=sensor&sort=desc&page=2&page_size=3
