@@ -1,5 +1,6 @@
 
 from pydantic import BaseModel, EmailStr,ConfigDict
+from typing import Optional
 
 
 
@@ -28,6 +29,6 @@ class DeviceResponse(BaseModel):
     location_name: str
     device_type: str
     status: str
-    temperature: float = None  # Opcionalno, jer ne svi uređaji imaju temperaturu
-    brightness: float = None
-    color: str = None
+    temperature: Optional[float] = None  # Opcionalno, može biti None
+    brightness: Optional[float] = None  # Opcionalno, može biti None
+    color: Optional[str] = None  # Opcionalno, može biti None

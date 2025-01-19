@@ -1,15 +1,16 @@
 import './App.css';
-import Login from './components/Login';
-import Devices from './components/Devices';
-import {Routes, Route, Link, BrowserRouter } from "react-router-dom";
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Devices from './pages/Devices';
+import {Routes, Route, BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
     <BrowserRouter className="App">
       <Routes>
-        {/* Ruta za Login stranicu */}
         <Route path="/" element={<Login />} />
-        {/* Ruta za Dashboard stranicu */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Devices />} />
       </Routes>
     </BrowserRouter>

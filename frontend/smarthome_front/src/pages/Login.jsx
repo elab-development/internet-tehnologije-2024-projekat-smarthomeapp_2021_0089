@@ -1,6 +1,6 @@
 import React, { useState} from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import "./Auth.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -41,8 +41,8 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
+    <div className="auth-container">
+      <div className="auth-card">
         <h2 className="text-center mb-4">Login</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleLogin}>
@@ -72,10 +72,13 @@ function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100">
+          <button type="submit" className="btn btn-primary w-100 custom-button " >
             Login
           </button>
         </form>
+        <p className="text-center mt-3">
+          Don’t have an account? <a href="/register">Register here</a>
+        </p>
       </div>
     </div>
   );

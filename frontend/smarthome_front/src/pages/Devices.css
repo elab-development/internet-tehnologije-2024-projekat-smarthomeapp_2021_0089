@@ -1,0 +1,36 @@
+
+.devices-grid-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.device-card-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Fiksna širina i visina za kartice */
+.device-card {
+  width: 18rem;  /* Širina kartice */
+  height: 25rem; /* Visina kartice */
+  margin: 0 auto;
+}
+
+.card-header,
+.card-body {
+  text-align: center;
+}
+
+/* Ukloni padding i margine iznad kartica ako je potrebno */
+.row-cols-1,
+.row-cols-md-3 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}

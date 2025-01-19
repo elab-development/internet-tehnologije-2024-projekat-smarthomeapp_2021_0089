@@ -60,8 +60,23 @@ def get_devices(
         devices = query.offset(offset).limit(page_size).all()
          # Ukupno pronadjenih uredjaja
         total_devices = query.count()
+
+        devices_response = []
+        for device in devices:
+            location_name = device.location.name if device.location else "Unknown"
+            devices_response.append(
+                schemas.DeviceResponse(
+                    device_id=device.device_id,
+                    location_name=location_name,
+                    device_type=device.device_type,
+                    status=device.status,
+                    temperature=getattr(device, "temperature", None),
+                    brightness=getattr(device, "brightness", None),
+                    color=getattr(device, "color", None),
+                )
+            )
         # Vracanje rezultata
-        return {"page": page, "page_size": page_size, "total_devices": total_devices, "data": devices} #vraca se JSON
+        return {"page": page, "page_size": page_size, "total_devices": total_devices, "data": devices_response} #vraca se JSON
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Greska prilikom pronalazenja uredjaja: {str(e)}") from e
     

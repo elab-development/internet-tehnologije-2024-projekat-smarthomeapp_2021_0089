@@ -7,29 +7,29 @@ function Sidebar({ onSelectDevice }){
 
   const handleClick = (device) => {
     setSelectedDevice(device); // Postavi trenutni odabrani uređaj
-    onSelectDevice(device); // Pozovi funkciju sa roditeljskom komponente
+    onSelectDevice(device); // poziva fju roditeljske komponente
   };
 
   return (
     <div className="sidebar">
 
       <button
-        className={selectedDevice === 'Thermostat1' ? 'active' : ''}
-        onClick={() => handleClick('Thermostat1')}
+        className={selectedDevice === 'thermostat' ? 'active' : ''}
+        onClick={() => handleClick('thermostat')}
       >
         <FaTemperatureHigh size={30} />
       </button>
 
       <button
-        className={selectedDevice === 'Light1' ? 'active' : ''}
-        onClick={() => handleClick('Light1')}
+        className={selectedDevice === 'lightbulb' ? 'active' : ''}
+        onClick={() => handleClick('lightbulb')}
       >
         <FaLightbulb size={30} />
       </button>
 
       <button
-        className={selectedDevice === 'Fan1' ? 'active' : ''}
-        onClick={() => handleClick('Fan1')}
+        className={selectedDevice === 'doorlock' ? 'active' : ''}
+        onClick={() => handleClick('doorlock')}
       >
         <FaUnlockAlt size={30} />
       </button>
