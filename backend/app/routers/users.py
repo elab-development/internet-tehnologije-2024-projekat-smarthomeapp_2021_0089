@@ -2,6 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from db import get_db
 import models,schemas,utils
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
+from settings import ALGORITHM, SECRET_KEY
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter(
     prefix="/users",
@@ -48,7 +52,6 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 #LOGIN KORISNIKA
-from fastapi.security import OAuth2PasswordRequestForm #klasa koja pomaze u citanju i koriscenju podataka za login
 
 @router.post("/login", response_model=schemas.TokenResponse)
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -75,3 +78,12 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
     # Vraćamo token korisniku
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+
+#LOGOUT KORISNIKA
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+@router.post("/logout")
+def logout_user(token: str = Depends(oauth2_scheme)):
+    # Samo vraćamo poruku korisniku
+    return {"message": "Logout successful. Please remove the token from local storage."}

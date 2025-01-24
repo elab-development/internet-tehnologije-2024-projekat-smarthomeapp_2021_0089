@@ -3,6 +3,7 @@ import settings
 
 
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -33,3 +34,4 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire}) #dodaje se kljuc u recnik (vreme isteka tokena)
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) #generisanje JWT tokena uz pomoc jose bibl.
     return encoded_jwt
+
