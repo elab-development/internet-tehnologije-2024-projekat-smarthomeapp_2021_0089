@@ -1,4 +1,3 @@
-
 .devices-grid-container {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -17,7 +16,7 @@
 
 /* Fiksna širina i visina za kartice */
 .device-card {
-  width: 18rem;  /* Širina kartice */
+  width: 18rem; /* Širina kartice */
   height: 25rem; /* Visina kartice */
   margin: 0 auto;
 }
