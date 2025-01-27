@@ -3,13 +3,17 @@ import axios from "axios";
 import ThermostatCard from "../components/ThermostatCard";
 import LightbulbCard from "../components/LightBulbCard";
 import DoorLockCard from "../components/DoorLockCard";
+import UserCard from "../components/UserCard";
 import Sidebar from "../components/Sidebar";
 import "./Devices.css";
+import { useNavigate } from "react-router-dom";
 
 function DevicesPage() {
   const [type, setType] = useState("thermostat"); //pocetni tip uredjaja
   const [devices, setDevices] = useState([]);
+  const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetchDevices = async (deviceType) => {
     const token = localStorage.getItem("access_token");
@@ -37,10 +41,17 @@ function DevicesPage() {
     }
   };
 
-  useEffect(() => {
+  /*useEffect(() => {
     // Pozovi API za početni tip uređaja
     fetchDevices(type);
-  }, [type]); // Pozovi svaki put kada se `type` promeni
+  }, [type]); // Pozovi svaki put kada se `type` promeni*/
+  useEffect(() => {
+    if (type === "user") {
+      fetchUser(); // Fetch user info when "user" type is selected
+    } else {
+      fetchDevices(type); // Fetch devices otherwise
+    }
+  }, [type]);
 
   const renderDeviceCard = (device) => {
     switch (device.device_type) {
@@ -55,24 +66,52 @@ function DevicesPage() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/login"); // Preusmeravanje na stranicu za prijavu
+  };
+
   if (error) {
     return <div>{error}</div>;
   }
 
+  const fetchUser = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setError("User not authenticated");
+      return;
+    }
+
+    try {
+      const response = await axios.get("http://localhost:8000/users/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUser(response.data);
+      setError(null);
+    } catch (error) {
+      setError("Failed to fetch user info");
+    }
+  };
+
   return (
     <div className="container">
       <div className="sidebar mx-auto">
-        {/* kada se promeni device u okviru Sidebar komponente, tada se poziva onSelectDevice i radi setType*/}
         <Sidebar onSelectDevice={(deviceType) => setType(deviceType)} />
       </div>
       <div className="devices-grid-container d-flex align-items-start">
-        <div className="row row-cols-3 row-cols-md-3 row-cols-sm-1">
-          {devices.map((device) => (
-            <div className="col" key={device.device_id}>
-              <div className="device-card">{renderDeviceCard(device)}</div>
-            </div>
-          ))}
-        </div>
+        {type === "user" && user ? (
+          <UserCard user={user} onLogout={handleLogout} />
+        ) : (
+          <div className="row row-cols-3 row-cols-md-3 row-cols-sm-1">
+            {devices.map((device) => (
+              <div className="col" key={device.device_id}>
+                <div className="device-card">{renderDeviceCard(device)}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
