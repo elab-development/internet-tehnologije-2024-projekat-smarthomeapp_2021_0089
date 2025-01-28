@@ -5,14 +5,14 @@ const UserCard = ({ user, onLogout }) => {
   return (
     <div className="card user-card mx-auto">
       <div className="card-header">
-        <h4>Podaci o korisniku</h4>
+        <h4>User info</h4>
       </div>
       <div className="card-body">
         <p>
-          <strong>Ime:</strong> Andjela
+          <strong>Name:</strong> Andjela
         </p>
         <p>
-          <strong>Prezime:</strong> Dimic
+          <strong>Last name:</strong> Dimic
         </p>
         <p>
           <strong>Email:</strong> ancika@example.com

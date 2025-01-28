@@ -41,10 +41,6 @@ function DevicesPage() {
     }
   };
 
-  /*useEffect(() => {
-    // Pozovi API za početni tip uređaja
-    fetchDevices(type);
-  }, [type]); // Pozovi svaki put kada se `type` promeni*/
   useEffect(() => {
     if (type === "user") {
       fetchUser(); // Fetch user info when "user" type is selected
