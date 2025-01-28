@@ -9,13 +9,13 @@ const UserCard = ({ user, onLogout }) => {
       </div>
       <div className="card-body">
         <p>
-          <strong>Name:</strong> Andjela
+          <strong>Name:</strong> {user.name}
         </p>
         <p>
-          <strong>Last name:</strong> Dimic
+          <strong>Last name:</strong> {user.lastName}
         </p>
         <p>
-          <strong>Email:</strong> ancika@example.com
+          <strong>Email:</strong> {user.email}
         </p>
         <button className="btn btn-danger" onClick={onLogout}>
           Logout

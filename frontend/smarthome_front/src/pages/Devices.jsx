@@ -14,6 +14,7 @@ function DevicesPage() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const userData = JSON.parse(localStorage.getItem("user"));
 
   const fetchDevices = async (deviceType) => {
     const token = localStorage.getItem("access_token");
@@ -97,8 +98,8 @@ function DevicesPage() {
         <Sidebar onSelectDevice={(deviceType) => setType(deviceType)} />
       </div>
       <div className="devices-grid-container d-flex align-items-start">
-        {type === "user" && user ? (
-          <UserCard user={user} onLogout={handleLogout} />
+        {type === "user" && userData ? (
+          <UserCard user={userData} onLogout={handleLogout} />
         ) : (
           <div className="row row-cols-3 row-cols-md-3 row-cols-sm-1">
             {devices.map((device) => (

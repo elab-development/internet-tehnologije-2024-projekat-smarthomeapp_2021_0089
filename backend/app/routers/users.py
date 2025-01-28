@@ -76,7 +76,13 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
     access_token = utils.create_access_token(data={"user_id": user.user_id})
 
     # Vraćamo token korisniku
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "name": user.name,
+        "last_name": user.lastname,
+        "email": user.mail
+    }
 
 
 

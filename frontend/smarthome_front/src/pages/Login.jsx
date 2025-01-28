@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Auth.css";
 
@@ -29,7 +29,16 @@ function Login() {
       }
 
       const data = await response.json();
+      console.log("Response data:", data);
       localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: data.name,
+          lastName: data.last_name,
+          email: data.email,
+        })
+      );
 
       alert("Login successful!");
 
@@ -72,7 +81,10 @@ function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary w-100 custom-button " >
+          <button
+            type="submit"
+            className="btn btn-primary w-100 custom-button "
+          >
             Login
           </button>
         </form>
@@ -82,6 +94,6 @@ function Login() {
       </div>
     </div>
   );
-};
+}
 
 export default Login;
