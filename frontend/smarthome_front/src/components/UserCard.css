@@ -1,12 +1,23 @@
 .user-card {
   width: 230px;
-  padding: 20px;
-  text-align: center;
   background: rgba(255, 255, 255, 0.8);
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.user-card .btn-danger {
-  margin-top: 10px;
+.card-header {
+  width: 100% !important;
+  text-align: center;
+  background: #f8f9fa;
+  padding: 10px 0;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  border-radius: 0;
+}
+
+.card-body {
+  padding: 15px;
 }

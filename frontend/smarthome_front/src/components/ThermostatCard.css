@@ -8,10 +8,10 @@
 }
 
 .temperature-display {
-  font-size: 1.5rem;  /* Povećaj veličinu teksta ako je potrebno */
+  font-size: 1.5rem; /* Povećaj veličinu teksta ako je potrebno */
   margin-bottom: 5px;
 }
 
-.thermostat-card{
+.thermostat-card {
   width: 230px;
 }
