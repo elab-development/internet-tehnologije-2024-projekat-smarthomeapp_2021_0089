@@ -1,0 +1,53 @@
+.doorlock-card {
+  background: #39384a; /* Tamna pozadina */
+  border-radius: 15px;
+  padding: 20px;
+  width: 250px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #ffffff; /* Bela boja za tekst */
+  transition: transform 0.3s ease;
+}
+
+.doorlock-card:hover {
+  transform: scale(1.05); /* Zoom efekat */
+}
+
+.card-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  color: white;
+  cursor: pointer; /* Dodavanje kursora */
+  transition: background-color 0.3s ease; /* Animacija promene boje */
+}
+
+.status.locked {
+  background-color: #f44336; /* Crvena za 'Locked' status */
+}
+
+.status.unlocked {
+  background-color: #4caf50; /* Zelena za 'Unlocked' status */
+}
+
+.card-icon {
+  margin-top: 20px;
+}
