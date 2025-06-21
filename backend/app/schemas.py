@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel, EmailStr,ConfigDict
-from typing import Optional
+from typing import Optional, Literal, Union
 
 
 
@@ -35,3 +35,34 @@ class DeviceResponse(BaseModel):
     temperature: Optional[float] = None  # Opcionalno, može biti None
     brightness: Optional[float] = None  # Opcionalno, može biti None
     color: Optional[str] = None  # Opcionalno, može biti None
+
+
+class BaseDeviceCreate(BaseModel):
+    location_name: str
+    status: Optional[str] = None
+    temperature: Optional[float] = None
+    device_type: Literal["device", "thermostat", "lightbulb", "doorlock", "oven"]
+
+class ThermostatCreate(BaseDeviceCreate):
+    device_type: Literal["thermostat"]
+
+class LightBulbCreate(BaseDeviceCreate):
+    device_type: Literal["lightbulb"]
+    brightness: Optional[float] = None
+    color: Optional[str] = None 
+
+class DoorLockCreate(BaseDeviceCreate):
+    device_type: Literal["doorlock"]
+
+class OvenCreate(BaseDeviceCreate):
+    device_type: Literal["oven"]
+
+
+DeviceCreate = Union[ThermostatCreate, LightBulbCreate, DoorLockCreate, OvenCreate, BaseDeviceCreate]
+
+
+class DeviceUpdate(BaseModel):
+    status: Optional[str] = None
+    temperature: Optional[float] = None
+    brightness: Optional[float] = None
+    color: Optional[str] = None
