@@ -6,6 +6,11 @@ from sqlalchemy import asc, desc
 from typing import List
 from dependencies import get_current_user, require_admin
 import schemas
+from fastapi.responses import StreamingResponse
+import io
+import csv
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 router = APIRouter()
@@ -160,3 +165,77 @@ def update_device(
     db.commit()
     db.refresh(device)
     return {"detail": "Device updated successfully"}
+
+
+#eksport podataka (uredjaji za datog korisnika)
+@router.get("/devices/export/")
+def export_devices(
+    format: str = Query(..., regex="^(csv|pdf)$"), #korisnik moze da bira samo ove formate
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    # uzima uredjaje korisnika
+    user_locations = current_user.locations
+    if not user_locations:
+        raise HTTPException(status_code=404, detail="No locations found for the user")
+
+    devices = (
+        db.query(models.Device)
+        .filter(models.Device.location_id.in_([loc.location_id for loc in user_locations]))
+        .all()
+    )
+
+    # Eksport u CSV
+    if format == "csv":
+        output = io.StringIO()
+        writer = csv.writer(output)
+        # Zaglavlje
+        writer.writerow(["device_id", "location_name", "device_type", "status", "temperature", "brightness", "color"])
+        # Podaci
+        for d in devices:
+            writer.writerow([
+                d.device_id,
+                d.location.name if d.location else "Unknown",
+                d.device_type,
+                d.status,
+                getattr(d, "temperature", ""), #ako uredjaj nema atribut temp, ostavlja prazno 
+                getattr(d, "brightness", ""),
+                getattr(d, "color", "")
+            ])
+        output.seek(0)
+        return StreamingResponse(output, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=devices.csv"})
+        #ovaj header browser prepoznaje kao fajl za preuzimanje
+    
+
+    # Eksport u PDF
+    elif format == "pdf":
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter) #reportlab biblioteka kreira PDF canvas
+        width, height = letter
+
+        p.setFont("Helvetica", 12)
+        y = height - 40
+        p.drawString(40, y, "Devices Report")
+        y -= 30
+
+        for d in devices:
+            line = f"ID: {d.device_id}, Type: {d.device_type}, Status: {d.status}, Location: {d.location.name if d.location else 'Unknown'}"
+            if hasattr(d, "temperature") and d.temperature is not None:
+                line += f", Temp: {d.temperature}"
+            if hasattr(d, "brightness") and d.brightness is not None:
+                line += f", Brightness: {d.brightness}"
+            if hasattr(d, "color") and d.color is not None:
+                line += f", Color: {d.color}"
+
+            p.drawString(40, y, line)
+            y -= 20
+            if y < 40:
+                p.showPage()
+                y = height - 40
+
+        p.save()
+        buffer.seek(0)
+        return StreamingResponse(buffer, media_type="application/pdf", headers={"Content-Disposition": "attachment; filename=devices.pdf"})
+
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported format")
