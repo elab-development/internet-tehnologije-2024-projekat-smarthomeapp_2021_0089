@@ -66,3 +66,7 @@ class DeviceUpdate(BaseModel):
     temperature: Optional[float] = None
     brightness: Optional[float] = None
     color: Optional[str] = None
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+    new_password: str

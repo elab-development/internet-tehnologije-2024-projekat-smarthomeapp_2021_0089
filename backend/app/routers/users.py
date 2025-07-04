@@ -7,6 +7,7 @@ from settings import ALGORITHM, SECRET_KEY
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
 
+
 router = APIRouter(
     prefix="/users",
     tags=["users"],
@@ -92,4 +93,22 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 @router.post("/logout")
 def logout_user(token: str = Depends(oauth2_scheme)):
     # Samo vraćamo poruku korisniku
-    return {"message": "Logout successful. Please remove the token from local storage."}
+    return {"message": "Logout successful"}
+
+
+#Promena lozinke u slucaju da je korisnik zaboravi
+
+@router.post("/reset-password")
+def reset_password(data: schemas.PasswordResetRequest, db: Session = Depends(get_db)):
+    # Pronađi korisnika po email adresi
+    user = db.query(models.User).filter(models.User.mail == data.email).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Heširaj novu lozinku i sačuvaj
+    hashed_new_password = utils.hash(data.new_password)
+    user.password = hashed_new_password
+
+    db.commit()
+    return {"message": "Lozinka je uspesno promenjena."}
