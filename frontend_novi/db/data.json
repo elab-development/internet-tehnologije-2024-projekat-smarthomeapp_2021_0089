@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+            "device_id": 5,
+            "location_name": "Kitchen",
+            "device_type": "doorlock",
+            "status": "locked",
+            "temperature": null,
+            "brightness": null,
+            "color": null
+        },
+        {
+            "device_id": 4,
+            "location_name": "Living room",
+            "device_type": "lightbulb",
+            "status": "on",
+            "temperature": null,
+            "brightness": 60,
+            "color": "yellow"
+        },
+        {
+            "device_id": 2,
+            "location_name": "Kitchen",
+            "device_type": "oven",
+            "status": "off",
+            "temperature": null,
+            "brightness": null,
+            "color": null
+        },
+        {
+            "device_id": 6,
+            "location_name": "Living room",
+            "device_type": "thermostat",
+            "status": "cooling",
+            "temperature": 20,
+            "brightness": null,
+            "color": null
+        },
+        {
+            "device_id": 3,
+            "location_name": "Kitchen",
+            "device_type": "thermostat",
+            "status": "heating",
+            "temperature": 27,
+            "brightness": null,
+            "color": null
+        }
+    ]
+}
