@@ -38,32 +38,32 @@ def get_devices(
     Kombinovana funkcija za paginaciju, filtriranje i sortiranje uredjaja.
     """
     try:
-        # Inicijalni upit
+        # inicijalni upit
         user_locations = current_user.locations
 
         if not user_locations:
             raise HTTPException(status_code=404, detail="No locations found for the user")
 
-        # Dohvati uređaje sa tih lokacija
+        # uzima uredjaje sa tih lokacija
         query = (
             db.query(models.Device)
             .filter(models.Device.location_id.in_([loc.location_id for loc in user_locations]))    
         )
-        # Filtriranje prema lokaciji
+        # filtriranje prema lokaciji
         if location_id is not None:
             query = query.join(models.Location).filter(models.Location.location_id == location_id)
-        # Filtriranje prema tipu uredjaja
+        # filtriranje prema tipu uredjaja
         if device_type is not None:
             query = query.filter(models.Device.device_type == device_type)
-        # Sortiranje prema tipu uredjaja
+        # sortiranje prema tipu uredjaja
         if sort == "asc":
             query = query.order_by(asc(models.Device.device_type))
         elif sort == "desc":
             query = query.order_by(desc(models.Device.device_type))
-        # Paginacija
+        # paginacija
         offset = (page - 1) * page_size
         devices = query.offset(offset).limit(page_size).all()
-         # Ukupno pronadjenih uredjaja
+         # ukupno pronadjenih uredjaja
         total_devices = query.count()
 
         devices_response = []
@@ -80,7 +80,7 @@ def get_devices(
                     color=getattr(device, "color", None),
                 )
             )
-        # Vracanje rezultata
+        # vracanje rezultata
         return {"page": page, "page_size": page_size, "total_devices": total_devices, "data": devices_response} #vraca se JSON
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Greska prilikom pronalazenja uredjaja: {str(e)}") from e
@@ -239,3 +239,29 @@ def export_devices(
 
     else:
         raise HTTPException(status_code=400, detail="Unsupported format")
+    
+
+# ugnjezdena ruta - vraca sve uredjaje na datoj lokaciji    
+@router.get("/locations/{location_id}/devices", response_model=List[schemas.DeviceResponse])
+def get_devices_by_location(location_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    location = db.query(models.Location).filter(models.Location.location_id == location_id).first()
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    # Provera da li korisnik ima pristup toj lokaciji
+    if location not in current_user.locations:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    devices = db.query(models.Device).filter(models.Device.location_id == location_id).all()
+
+    return [
+        schemas.DeviceResponse(
+            device_id=d.device_id,
+            location_name=location.name,
+            device_type=d.device_type,
+            status=d.status,
+            temperature=getattr(d, "temperature", None),
+            brightness=getattr(d, "brightness", None),
+            color=getattr(d, "color", None),
+        ) for d in devices
+    ]

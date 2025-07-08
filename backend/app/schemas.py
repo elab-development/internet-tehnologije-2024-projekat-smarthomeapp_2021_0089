@@ -70,3 +70,9 @@ class DeviceUpdate(BaseModel):
 class PasswordResetRequest(BaseModel):
     email: EmailStr
     new_password: str
+
+class Location(BaseModel):
+    location_id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
