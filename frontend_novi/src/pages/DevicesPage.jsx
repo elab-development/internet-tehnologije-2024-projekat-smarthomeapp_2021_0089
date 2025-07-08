@@ -1,29 +1,23 @@
-import { Box, Flex, SimpleGrid } from '@chakra-ui/react';
-import { useLoaderData } from "react-router-dom"
-import { LuThermometerSun } from "react-icons/lu";
-import { FaRegLightbulb, FaLock } from "react-icons/fa";
-import { PiOvenBold } from "react-icons/pi";
-
+import { Box, Flex, SimpleGrid} from '@chakra-ui/react';
 import { useEffect, useState } from "react";
+import DevicesSideBar from '../components/DevicesSideBar';
+
 
 function Devices() {
     const [devices, setDevices] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:3000/db")
+        fetch("/db/data.json")
             .then((res) => res.json())
             .then((json) => setDevices(json.data));
     }, []);
 
+
+
     return (
-        <Flex flexDirection="column">
-            <Flex align="center" justify="center" height="80px" gap="10px">
-                <LuThermometerSun color="orange" size={30} />
-                <FaRegLightbulb color='orange' size={30} />
-                <PiOvenBold color='orange' size={30}/>
-                <FaLock color='orange' size={30}/>
-            </Flex>
-            <SimpleGrid  columnGap="5" rowGap="5" minChildWidth={250} >
+        <Flex>
+            <DevicesSideBar/>
+            <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
 
                 <Box bg="white" height="200px" border="1px solid"></Box>
                 <Box bg="white" height="200px" border="1px solid"></Box>
@@ -35,6 +29,7 @@ function Devices() {
                 <Box bg="white" height="200px" border="1px solid"></Box>
                 <Box bg="white" height="200px" border="1px solid"></Box>
 
+                <Box bg="white" height="200px" border="1px solid"></Box>
                 <Box bg="white" height="200px" border="1px solid"></Box>
                 <Box bg="white" height="200px" border="1px solid"></Box>
                 <Box bg="white" height="200px" border="1px solid"></Box>
@@ -46,3 +41,38 @@ function Devices() {
 
 
 export default Devices;
+/*import { Flex, SimpleGrid} from '@chakra-ui/react';
+import { useEffect, useState } from "react";
+import DevicesSideBar from '../components/DevicesSideBar';
+import DeviceCard from '../components/DeviceCard'
+
+function Devices() {
+  const [devices, setDevices] = useState([]);
+
+  useEffect(() => {
+    fetch("/db/data.json")
+      .then((res) => res.json())
+      .then((json) => setDevices(json.data));
+  }, []);
+
+  const handleUpdate = (deviceId, field, value) => {
+    setDevices(prevDevices =>
+      prevDevices.map(device =>
+        device.device_id === deviceId ? { ...device, [field]: value } : device
+      )
+    );
+  };
+
+  return (
+    <Flex>
+      <DevicesSideBar />
+      <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
+        {devices.map(device => (
+          <DeviceCard key={device.device_id} device={device} onUpdate={handleUpdate} />
+        ))}
+      </SimpleGrid>
+    </Flex>
+  );
+}
+
+export default Devices;*/

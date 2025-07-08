@@ -19,12 +19,6 @@ export default function SideBar() {
                 </NavLink>
             </List.Item>
             <List.Item>
-                <NavLink to="/main/create">
-                    <List.Indicator as={FaPenAlt} color="white" />
-                    New Device
-                </NavLink>
-            </List.Item>
-            <List.Item>
                 <NavLink to="/main/profile">
                     <List.Indicator as={FaUserAlt} color="white" />
                     Profile
