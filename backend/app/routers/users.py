@@ -6,6 +6,8 @@ from jose import JWTError, jwt
 from settings import ALGORITHM, SECRET_KEY
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
+from typing import List
+from dependencies import require_admin
 
 
 router = APIRouter(
@@ -112,3 +114,4 @@ def reset_password(data: schemas.PasswordResetRequest, db: Session = Depends(get
 
     db.commit()
     return {"message": "Lozinka je uspesno promenjena."}
+
