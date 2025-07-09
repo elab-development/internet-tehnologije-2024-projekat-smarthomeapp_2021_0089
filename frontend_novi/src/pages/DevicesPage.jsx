@@ -1,6 +1,8 @@
 import { Box, Flex, SimpleGrid} from '@chakra-ui/react';
 import { useEffect, useState } from "react";
 import DevicesSideBar from '../components/DevicesSideBar';
+import ThermostatCard from '../components/cards/ThermostatCard';
+
 
 
 function Devices() {
@@ -12,9 +14,17 @@ function Devices() {
             .then((json) => setDevices(json.data));
     }, []);
 
+    const devic = {
+        device_id: 3,
+        location_name: "Kitchen",
+        device_type: "thermostat",
+        status: "heating",
+        temperature: 27,
+        brightness: null,
+        color: null
+    };
 
-
-    return (
+    /*return (
         <Flex>
             <DevicesSideBar/>
             <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
@@ -36,7 +46,23 @@ function Devices() {
                 <Box bg="white" height="200px" border="1px solid"></Box>
             </SimpleGrid>
         </Flex>
-    );
+    );*/
+
+        return (<Flex>
+            <DevicesSideBar/>
+            <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
+
+                <ThermostatCard device={devic}/>
+                <ThermostatCard device={devic}/>
+                <ThermostatCard device={devic}/>
+                <ThermostatCard device={devic}/>
+                <ThermostatCard device={devic}/>
+
+
+                </SimpleGrid>
+                </Flex>);
+    
+
 }
 
 
