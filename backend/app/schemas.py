@@ -35,6 +35,8 @@ class DeviceResponse(BaseModel):
     temperature: Optional[float] = None  # Opcionalno, može biti None
     brightness: Optional[float] = None  # Opcionalno, može biti None
     color: Optional[str] = None  # Opcionalno, može biti None
+    air_quality: Optional[float] = None
+    fan_speed: Optional[int] = None
 
 
 class BaseDeviceCreate(BaseModel):

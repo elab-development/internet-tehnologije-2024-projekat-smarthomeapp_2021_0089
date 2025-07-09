@@ -78,6 +78,8 @@ def get_devices(
                     temperature=getattr(device, "temperature", None),
                     brightness=getattr(device, "brightness", None),
                     color=getattr(device, "color", None),
+                    air_quality=getattr(device,"air_quality",None),
+                    fan_speed=getattr(device,"fan_speed",None)
                 )
             )
         # vracanje rezultata

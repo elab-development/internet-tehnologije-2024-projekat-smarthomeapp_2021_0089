@@ -115,3 +115,15 @@ def reset_password(data: schemas.PasswordResetRequest, db: Session = Depends(get
     db.commit()
     return {"message": "Lozinka je uspesno promenjena."}
 
+# vraca sve sobe za datog korisnika
+@router.get("/{user_id}/locations", response_model=List[schemas.Location])
+def get_user_locations(
+    user_id: int,
+    db: Session = Depends(get_db),
+    admin: models.User = Depends(require_admin)
+):
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user.locations
+
