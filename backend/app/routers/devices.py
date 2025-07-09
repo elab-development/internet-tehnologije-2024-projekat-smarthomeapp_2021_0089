@@ -104,6 +104,7 @@ def create_device(
         "lightbulb": models.LightBulb,
         "doorlock": models.DoorLock,
         "oven": models.Oven,
+        "airpurifier":models.AirPurifier
     }
 
     model_class = model_map.get(device.device_type)

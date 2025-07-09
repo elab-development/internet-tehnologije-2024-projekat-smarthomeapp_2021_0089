@@ -1,0 +1,39 @@
+import { BsDoorClosedFill, BsDoorOpenFill } from "react-icons/bs";
+import { Card, Flex, Text, Icon } from '@chakra-ui/react';
+import { useState } from 'react';
+
+function DoorlockCard({ device }) {
+    const [status, setStatus] = useState(device.status);
+
+    const handleToggle = () => {
+        setStatus((prev) => (prev === "unlocked" ? "locked" : "unlocked"));
+    };
+
+    return (
+        <Card.Root height="230px" width='260px'>
+            <Card.Header bg="#A31D1D" rounded={10} p={4}>
+                <Flex justify="center" align="center" height="100%">
+                    <Text color="white" fontSize="xl" fontWeight="bold">
+                        {device.location_name} - {device.device_type}
+                    </Text>
+                </Flex>
+            </Card.Header>
+            <Card.Body bg="white" p={4} rounded={10}>
+                <Flex direction="column" align="center" justify="center" height="100%" gap={3}>
+                    <Icon
+                        as={status === "unlocked" ? BsDoorOpenFill : BsDoorClosedFill}
+                        boxSize={16}
+                        cursor="pointer"
+                        color={status === "unlocked" ? "green.500" : "gray.700"}
+                        onClick={handleToggle}
+                    />
+                    <Text fontWeight="bold" color="gray.700">
+                        Door is {status}
+                    </Text>
+                </Flex>
+            </Card.Body>
+        </Card.Root>
+    );
+}
+
+export default DoorlockCard;

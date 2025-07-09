@@ -11,7 +11,7 @@ import {
 import { FaSnowflake, FaPause, FaFire } from 'react-icons/fa';
 import { useState } from 'react';
 
-const ThermostatCard = ({ device }) => {
+function ThermostatCard({ device }) {
 
   const [wantedTemp, setWantedTemp] = useState(device.temperature);
   const [status, setStatus] = useState(device.status);
@@ -36,7 +36,7 @@ const ThermostatCard = ({ device }) => {
   };*/
 
   return (
-    <Card.Root height="230px" width='250px' rounded={10}>
+    <Card.Root height="230px" width='260px'>
       <Card.Header bg="#A31D1D" rounded={10} p={4}>
         <Flex justify="center" align="center" height="100%">
           <Text color="white" fontSize="xl" fontWeight="bold">

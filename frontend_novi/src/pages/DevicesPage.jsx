@@ -2,6 +2,8 @@ import { Box, Flex, SimpleGrid} from '@chakra-ui/react';
 import { useEffect, useState } from "react";
 import DevicesSideBar from '../components/DevicesSideBar';
 import ThermostatCard from '../components/cards/ThermostatCard';
+import LightbulbCard from '../components/cards/LightbulbCard';
+import DoorlockCard from '../components/cards/DoorlockCard';
 
 
 
@@ -23,6 +25,26 @@ function Devices() {
         brightness: null,
         color: null
     };
+
+    const deviceLight=         {
+            "device_id": 4,
+            "location_name": "Living room",
+            "device_type": "lightbulb",
+            "status": "on",
+            "temperature": null,
+            "brightness": 60,
+            "color": "yellow"
+        };
+
+    const deviceDoor=        {
+            "device_id": 5,
+            "location_name": "Kitchen",
+            "device_type": "doorlock",
+            "status": "locked",
+            "temperature": null,
+            "brightness": null,
+            "color": null
+        };
 
     /*return (
         <Flex>
@@ -50,13 +72,14 @@ function Devices() {
 
         return (<Flex>
             <DevicesSideBar/>
-            <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
+            <SimpleGrid columnGap="5" rowGap="5" minChildWidth={260} width="100%" flex="1">
 
                 <ThermostatCard device={devic}/>
                 <ThermostatCard device={devic}/>
                 <ThermostatCard device={devic}/>
                 <ThermostatCard device={devic}/>
-                <ThermostatCard device={devic}/>
+                <LightbulbCard device={deviceLight}/>
+                <DoorlockCard device={deviceDoor}/>
 
 
                 </SimpleGrid>

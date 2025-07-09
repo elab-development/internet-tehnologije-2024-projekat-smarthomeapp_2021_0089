@@ -41,7 +41,7 @@ class BaseDeviceCreate(BaseModel):
     location_name: str
     status: Optional[str] = None
     temperature: Optional[float] = None
-    device_type: Literal["device", "thermostat", "lightbulb", "doorlock", "oven"]
+    device_type: Literal["device", "thermostat", "lightbulb", "doorlock", "oven", "airpurifier"]
 
 class ThermostatCreate(BaseDeviceCreate):
     device_type: Literal["thermostat"]
@@ -57,8 +57,13 @@ class DoorLockCreate(BaseDeviceCreate):
 class OvenCreate(BaseDeviceCreate):
     device_type: Literal["oven"]
 
+class AirPurifierCreate(BaseDeviceCreate):
+    device_type: Literal["airpurifier"]
+    air_quality: Optional[float] = None
+    fan_speed: Optional[int] = None
 
-DeviceCreate = Union[ThermostatCreate, LightBulbCreate, DoorLockCreate, OvenCreate, BaseDeviceCreate]
+
+DeviceCreate = Union[ThermostatCreate, LightBulbCreate, DoorLockCreate, OvenCreate, AirPurifierCreate, BaseDeviceCreate]
 
 
 class DeviceUpdate(BaseModel):

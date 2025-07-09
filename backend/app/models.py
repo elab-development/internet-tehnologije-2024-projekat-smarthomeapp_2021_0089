@@ -69,3 +69,10 @@ class Oven(Device):
     __mapper_args__ = {'polymorphic_identity': 'oven'} 
     # temperature: float =Column(Float, nullable=False)
 
+class AirPurifier(Device):
+    __mapper_args__ = {'polymorphic_identity': 'airpurifier'}
+    #status: str=Column(String,nullable=False) #on,off
+    air_quality: float = Column(Float)  # Optional: Air quality metric
+    fan_speed: int = Column(Integer) # 1 = low, 2 = medium, 3 = high
+
+
