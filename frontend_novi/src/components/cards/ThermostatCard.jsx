@@ -21,22 +21,8 @@ function ThermostatCard({ device }) {
     setWantedTemp(value); // 'value' je niz, npr [21]
   };
 
- /*
-  const handleSubmit = () => {
-    const data = {
-      device_id: device.device_id,
-      temperature: wantedTemp[0], 
-      status,
-    };
-    console.log('Submitting:', data);
-    // fetch('/api/update-thermostat', {
-    //   method: 'POST',
-    //   body: JSON.stringify(data),
-    // });
-  };*/
-
   return (
-    <Card.Root height="230px" width='260px'>
+    <Card.Root height="230px" width='280px'>
       <Card.Header bg="#A31D1D" rounded={10} p={4}>
         <Flex justify="center" align="center" height="100%">
           <Text color="white" fontSize="xl" fontWeight="bold">
