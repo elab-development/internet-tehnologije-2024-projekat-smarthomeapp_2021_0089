@@ -1,7 +1,7 @@
 import { List } from "@chakra-ui/react"
 
 import { NavLink } from "react-router-dom"
-import { FaCalendarAlt, FaPenAlt, FaUserAlt, FaHome } from "react-icons/fa";
+import { FaCalendarAlt, FaUserAlt, FaHome } from "react-icons/fa";
 
 export default function SideBar() {
   return (

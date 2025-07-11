@@ -3,7 +3,7 @@ import {
   IconButton,
   Portal
 } from "@chakra-ui/react";
-import { FaPlus, FaRegLightbulb, FaLock } from "react-icons/fa";
+import { FaPlus} from "react-icons/fa";
 
 export default function AddButton() {
   return (
@@ -17,7 +17,6 @@ export default function AddButton() {
         _active={{ bg: "#700F0F" }} 
         size="s"
         rounded="full"
-        aria-label="Call support"
         height={10}
         width={10}>
           <FaPlus />

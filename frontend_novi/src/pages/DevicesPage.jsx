@@ -1,127 +1,81 @@
-import { Box, Flex, SimpleGrid} from '@chakra-ui/react';
-import { useEffect, useState } from "react";
+import { Box, Flex, SimpleGrid } from '@chakra-ui/react';
+import { useEffect, useState, useCallback } from "react";
 import DevicesSideBar from '../components/DevicesSideBar';
 import ThermostatCard from '../components/cards/ThermostatCard';
 import LightbulbCard from '../components/cards/LightbulbCard';
 import DoorlockCard from '../components/cards/DoorlockCard';
+import AirpurifierCard from '../components/cards/AirpurifierCard';
 
 
 
 function Devices() {
-    const [devices, setDevices] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [deviceTypeFilter, setDeviceTypeFilter] = useState(null);
 
-    useEffect(() => {
-        fetch("/db/data.json")
-            .then((res) => res.json())
-            .then((json) => setDevices(json.data));
-    }, []);
+  const token = localStorage.getItem("access_token");
 
-    const devic = {
-        device_id: 3,
-        location_name: "Kitchen",
-        device_type: "thermostat",
-        status: "heating",
-        temperature: 27,
-        brightness: null,
-        color: null
-    };
+  const fetchDevices = useCallback(() => {
+    let url = "http://localhost:8000/devices/";
+    if (deviceTypeFilter) {
+      url += `?device_type=${deviceTypeFilter}`;
+    }
 
-    const deviceLight=         {
-            "device_id": 4,
-            "location_name": "Living room",
-            "device_type": "lightbulb",
-            "status": "on",
-            "temperature": null,
-            "brightness": 60,
-            "color": "yellow"
-        };
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setDevices(data?.data ?? []))
+      .catch(err => {
+        console.error("Failed to load devices:", err);
+        setDevices([]);
+      });
+  }, [deviceTypeFilter, token]);
 
-    const deviceDoor=        {
-            "device_id": 5,
-            "location_name": "Kitchen",
-            "device_type": "doorlock",
-            "status": "locked",
-            "temperature": null,
-            "brightness": null,
-            "color": null
-        };
+  useEffect(() => {
+    fetchDevices();
+  }, [fetchDevices]);
 
-    /*return (
-        <Flex>
-            <DevicesSideBar/>
-            <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
-
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-                <Box bg="white" height="200px" border="1px solid"></Box>
-            </SimpleGrid>
-        </Flex>
-    );*/
-
-        return (<Flex>
-            <DevicesSideBar/>
-            <SimpleGrid columnGap="5" rowGap="5" minChildWidth={260} width="100%" flex="1">
-
-                <ThermostatCard device={devic}/>
-                <ThermostatCard device={devic}/>
-                <ThermostatCard device={devic}/>
-                <ThermostatCard device={devic}/>
-                <LightbulbCard device={deviceLight}/>
-                <DoorlockCard device={deviceDoor}/>
+  // Renderuje kartice na osnovu tipa
+  const renderDeviceCard = (device) => {
+    switch (device.device_type) {
+      case "thermostat":
+        return <ThermostatCard key={device.device_id} device={device} />;
+      case "lightbulb":
+        return <LightbulbCard key={device.device_id} device={device} />;
+      case "airpurifier":
+        return <AirpurifierCard key={device.device_id} device={device} />;
+      case "doorlock":
+        return <DoorlockCard key={device.device_id} device={device} />;
+      default:
+        return null;
+    }
+  };
 
 
-                </SimpleGrid>
-                </Flex>);
-    
+  return (<Flex wrap='wrap' rowGap={'5'}>
+    <DevicesSideBar onFilter={setDeviceTypeFilter} />
+    <Flex wrap="wrap" gap={3} width="100%" flex="1" p={3}>
+      {devices.map(device => (
+        <Box key={device.device_id} minWidth="260px">
+          {renderDeviceCard(device)}
+        </Box>
+      ))}
+    </Flex>
+
+  </Flex>);
+
 
 }
 
 
 export default Devices;
-/*import { Flex, SimpleGrid} from '@chakra-ui/react';
-import { useEffect, useState } from "react";
-import DevicesSideBar from '../components/DevicesSideBar';
-import DeviceCard from '../components/DeviceCard'
 
-function Devices() {
-  const [devices, setDevices] = useState([]);
 
-  useEffect(() => {
-    fetch("/db/data.json")
-      .then((res) => res.json())
-      .then((json) => setDevices(json.data));
-  }, []);
+/*    <SimpleGrid columnGap="5" rowGap="5" minChildWidth={260} width="100%" flex="1" justifyItems="start">
 
-  const handleUpdate = (deviceId, field, value) => {
-    setDevices(prevDevices =>
-      prevDevices.map(device =>
-        device.device_id === deviceId ? { ...device, [field]: value } : device
-      )
-    );
-  };
 
-  return (
-    <Flex>
-      <DevicesSideBar />
-      <SimpleGrid columnGap="5" rowGap="5" minChildWidth={250} width="100%" flex="1">
-        {devices.map(device => (
-          <DeviceCard key={device.device_id} device={device} onUpdate={handleUpdate} />
-        ))}
-      </SimpleGrid>
-    </Flex>
-  );
-}
+      {devices.map(device => renderDeviceCard(device))}
 
-export default Devices;*/
+
+
+    </SimpleGrid>*/

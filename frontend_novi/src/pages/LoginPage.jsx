@@ -47,8 +47,6 @@ function Login() {
         })
       );
 
-      alert("Login successful!");
-
       setError(null);
       navigate("/main/dashboard");
     } catch (err) {

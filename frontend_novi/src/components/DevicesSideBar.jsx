@@ -1,19 +1,26 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { LuThermometerSun } from "react-icons/lu";
 import { FaRegLightbulb, FaLock } from "react-icons/fa";
-import { PiOvenBold } from "react-icons/pi";
+
 
 import { useState } from "react";
 import AddButton from './AddButton';
+import { MdAir } from 'react-icons/md';
 
-export default function DevicesSideBar() {
+export default function DevicesSideBar({ onFilter }) {
     const icons = [
-        { id: "thermo", icon: LuThermometerSun },
-        { id: "light", icon: FaRegLightbulb },
-        { id: "oven", icon: PiOvenBold },
-        { id: "lock", icon: FaLock },
+        { id: "thermostat", icon: LuThermometerSun },
+        { id: "lightbulb", icon: FaRegLightbulb },
+        { id: "airpurifier", icon: MdAir },
+        { id: "doorlock", icon: FaLock },
     ];
     const [active, setActive] = useState(null);
+
+    const handleClick = (id) => {
+        const newActive = active === id ? null : id;
+        setActive(newActive);
+        onFilter(newActive); // pošalji null ako deaktiviraš
+    };
 
     return (
         <Flex direction={'column'} align="center">
@@ -29,7 +36,7 @@ export default function DevicesSideBar() {
                         <Box
                             key={id}
                             as="button"
-                            onClick={() => setActive(id)}
+                            onClick={() => handleClick(id)}
                             color={active === id ? "#fcb407" : "#faf6ed"}
                             transition="transform 0.2s ease"
                             transform={active === id ? "scale(1.2)" : "scale(1.0)"}
@@ -43,7 +50,7 @@ export default function DevicesSideBar() {
                     ))}
                 </Flex>
             </Box>
-            <AddButton/>
+            <AddButton />
         </Flex>
     )
 }
