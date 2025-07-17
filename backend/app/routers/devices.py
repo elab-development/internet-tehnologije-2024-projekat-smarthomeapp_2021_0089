@@ -93,7 +93,6 @@ def get_devices(
 #Filtriranje po lokaciji i paginacija:GET /devices/?location_id=2&page=1&page_size=5
 #Sortiranje i filtriranje:GET /devices/?device_type=sensor&sort=desc&page=2&page_size=3
 
-
 @router.post("/devices", status_code=201)
 def create_device(
     device: schemas.DeviceCreate,
@@ -105,31 +104,46 @@ def create_device(
         "thermostat": models.Thermostat,
         "lightbulb": models.LightBulb,
         "doorlock": models.DoorLock,
-        "oven": models.Oven,
-        "airpurifier":models.AirPurifier
+        "airpurifier": models.AirPurifier
     }
 
     model_class = model_map.get(device.device_type)
     if not model_class:
         raise HTTPException(status_code=400, detail="Invalid device_type")
 
-
     location = db.query(models.Location).filter(models.Location.name == device.location_name).first()
     if not location:
         raise HTTPException(status_code=404, detail="Location not found")
 
-    # Kreiram dict podataka, ali bez location_name
     device_data = device.model_dump(exclude_unset=True, exclude={"location_name"})
 
-    # Dodajem location_id u podatke
     device_data["location_id"] = location.location_id
+
+    # Dodaju se default vrednosti
+    if device.device_type == "thermostat":
+        device_data.setdefault("status", "idle")
+        device_data.setdefault("temperature", 22.0)
+    elif device.device_type == "lightbulb":
+        device_data.setdefault("status", "off")
+        device_data.setdefault("brightness", 0.0)
+        device_data.setdefault("color", "white")
+    elif device.device_type == "doorlock":
+        device_data.setdefault("status", "unlocked")
+    elif device.device_type == "airpurifier":
+        device_data.setdefault("status", "off")
+        device_data.setdefault("fan_speed", 1)
+        device_data.setdefault("air_quality", 0.0)  # npr. početna AQI vrednost
 
     new_device = model_class(**device_data)
     db.add(new_device)
     db.commit()
     db.refresh(new_device)
 
-    return {"message": "Device created successfully", "device_id": new_device.device_id}
+    return schemas.DeviceResponse(
+        **new_device.__dict__,
+        location_name=location.name
+    )
+
 
 @router.delete("/devices/{device_id}", status_code=204)
 def delete_device(device_id: int, db: Session = Depends(get_db), auth: models.User = Depends(require_admin)):
