@@ -7,7 +7,7 @@ import { useState } from "react";
 import AddButton from './AddButton';
 import { MdAir } from 'react-icons/md';
 
-export default function DevicesSideBar({ onFilter }) {
+export default function DevicesSideBar({ onFilter, onDeviceAdded }) {
     const icons = [
         { id: "thermostat", icon: LuThermometerSun },
         { id: "lightbulb", icon: FaRegLightbulb },
@@ -19,7 +19,7 @@ export default function DevicesSideBar({ onFilter }) {
     const handleClick = (id) => {
         const newActive = active === id ? null : id;
         setActive(newActive);
-        onFilter(newActive); // pošalji null ako deaktiviraš
+        onFilter(newActive); // salje null ako deaktivira
     };
 
     return (
@@ -50,7 +50,7 @@ export default function DevicesSideBar({ onFilter }) {
                     ))}
                 </Flex>
             </Box>
-            <AddButton />
+            <AddButton onDeviceCreated={onDeviceAdded} />
         </Flex>
     )
 }

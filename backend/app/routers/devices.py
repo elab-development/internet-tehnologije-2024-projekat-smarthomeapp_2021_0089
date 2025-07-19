@@ -125,8 +125,8 @@ def create_device(
         device_data.setdefault("temperature", 22.0)
     elif device.device_type == "lightbulb":
         device_data.setdefault("status", "off")
-        device_data.setdefault("brightness", 0.0)
-        device_data.setdefault("color", "white")
+        device_data.setdefault("brightness", 50.0)
+        device_data.setdefault("color", "yellow")
     elif device.device_type == "doorlock":
         device_data.setdefault("status", "unlocked")
     elif device.device_type == "airpurifier":

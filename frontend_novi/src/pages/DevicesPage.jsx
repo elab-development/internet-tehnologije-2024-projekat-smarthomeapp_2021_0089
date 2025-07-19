@@ -1,4 +1,4 @@
-import { Box, Flex, SimpleGrid } from '@chakra-ui/react';
+import { Box, Flex} from '@chakra-ui/react';
 import { useEffect, useState, useCallback } from "react";
 import DevicesSideBar from '../components/DevicesSideBar';
 import ThermostatCard from '../components/cards/ThermostatCard';
@@ -35,25 +35,38 @@ function Devices() {
     fetchDevices();
   }, [fetchDevices]);
 
+
+  const handleDeviceDeleted = (deletedId) => {
+    setDevices(prev => prev.filter(device => device.device_id !== deletedId));
+  };
+
+  const handleDeviceAdded = (newDevice) => {
+    setDevices(prev => [...prev, newDevice]);
+  };
+
+
   // Renderuje kartice na osnovu tipa
   const renderDeviceCard = (device) => {
+    const commonProps = { device, onDeleted: handleDeviceDeleted };
+
     switch (device.device_type) {
       case "thermostat":
-        return <ThermostatCard key={device.device_id} device={device} />;
+        return <ThermostatCard {...commonProps} />;;
       case "lightbulb":
-        return <LightbulbCard key={device.device_id} device={device} />;
+        return <LightbulbCard {...commonProps} />;
       case "airpurifier":
-        return <AirpurifierCard key={device.device_id} device={device} />;
+        return <AirpurifierCard {...commonProps} />;
       case "doorlock":
-        return <DoorlockCard key={device.device_id} device={device} />;
+        return <DoorlockCard {...commonProps} />;
       default:
         return null;
     }
   };
 
 
+
   return (<Flex wrap='wrap' rowGap={'5'}>
-    <DevicesSideBar onFilter={setDeviceTypeFilter} />
+    <DevicesSideBar onFilter={setDeviceTypeFilter} onDeviceAdded={handleDeviceAdded} />
     <Flex wrap="wrap" gap={3} width="100%" flex="1" p={3}>
       {devices.map(device => (
         <Box key={device.device_id} minWidth="260px">
@@ -69,13 +82,3 @@ function Devices() {
 
 
 export default Devices;
-
-
-/*    <SimpleGrid columnGap="5" rowGap="5" minChildWidth={260} width="100%" flex="1" justifyItems="start">
-
-
-      {devices.map(device => renderDeviceCard(device))}
-
-
-
-    </SimpleGrid>*/

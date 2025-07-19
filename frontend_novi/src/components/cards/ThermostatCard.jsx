@@ -4,14 +4,13 @@ import {
   Slider,
   IconButton,
   VStack,
-  HStack,
-  Flex,
-  Button
+  HStack
 } from '@chakra-ui/react';
 import { FaSnowflake, FaPause, FaFire } from 'react-icons/fa';
 import { useState } from 'react';
+import DeviceCardHeader from '../DeviceCardHeader';
 
-function ThermostatCard({ device }) {
+function ThermostatCard({ device, onDeleted }) {
 
   const [wantedTemp, setWantedTemp] = useState(device.temperature);
   const [status, setStatus] = useState(device.status);
@@ -23,13 +22,7 @@ function ThermostatCard({ device }) {
 
   return (
     <Card.Root height="230px" width='280px'>
-      <Card.Header bg="#A31D1D" rounded={10} p={4}>
-        <Flex justify="center" align="center" height="100%">
-          <Text color="white" fontSize="xl" fontWeight="bold">
-            {device.location_name} - {device.device_type}
-          </Text>
-        </Flex>
-      </Card.Header>
+      <DeviceCardHeader device={device} onDeleted={onDeleted} />
       <Card.Body bg="white" p={4} rounded={10}>
         <VStack align="center" spacing={4}>
           <Text textStyle='xl' fontWeight="bold">{wantedTemp}°C</Text>

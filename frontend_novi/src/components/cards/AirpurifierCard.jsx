@@ -9,8 +9,9 @@ import {
 } from "@chakra-ui/react";
 import { MdAir } from "react-icons/md";
 import { TbCarFan1, TbCarFan2, TbCarFan3 } from "react-icons/tb";
+import DeviceCardHeader from "../DeviceCardHeader";
 
-function AirpurifierCard({ device }) {
+function AirpurifierCard({ device, onDeleted }) {
   const [isOn, setIsOn] = useState(device.status === "on")
   const [airQuality, setAirQuality] = useState(device.air_quality);
   const [fanSpeed, setFanSpeed] = useState(device.fan_speed);
@@ -33,13 +34,7 @@ function AirpurifierCard({ device }) {
 
   return (
     <Card.Root height='230px' width='280px'>
-      <Card.Header bg="#A31D1D" rounded={10} p={4}>
-        <Flex justify="center" align="center" height="100%">
-          <Text color="white" fontSize="xl" fontWeight="bold">
-            {device.location_name} - {device.device_type}
-          </Text>
-        </Flex>
-      </Card.Header>
+      <DeviceCardHeader device={device} onDeleted={onDeleted} />
       <Card.Body bg="white" rounded={10} p={4}>
         <Flex width="100%" align='start'>
           <Switch.Root
