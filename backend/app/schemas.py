@@ -73,6 +73,8 @@ class DeviceUpdate(BaseModel):
     temperature: Optional[float] = None
     brightness: Optional[float] = None
     color: Optional[str] = None
+    air_quality: Optional[float] = None
+    fan_speed: Optional[int] = None
 
 class PasswordResetRequest(BaseModel):
     email: EmailStr

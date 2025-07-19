@@ -8,6 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
 from dependencies import require_admin
+from dependencies import get_current_user
 
 
 router = APIRouter(
@@ -16,9 +17,20 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
+
 @router.get("/")
 def read_users():
     return [{"username": "Sponge"}, {"username": "Bob"}]
+
+@router.get("/me", response_model=schemas.UserResponse)
+def get_logged_in_user(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized Access")
+    return current_user
 
 @router.get("/{id}", response_model= schemas.UserResponse)
 def get_user(id: int, db: Session = Depends(get_db)):
@@ -120,10 +132,9 @@ def reset_password(data: schemas.PasswordResetRequest, db: Session = Depends(get
 def get_user_locations(
     user_id: int,
     db: Session = Depends(get_db),
-    admin: models.User = Depends(require_admin)
+    #admin: models.User = Depends(require_admin)
 ):
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user.locations
-
