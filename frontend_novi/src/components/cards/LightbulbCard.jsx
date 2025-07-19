@@ -1,6 +1,5 @@
 import {
     Card,
-    Text,
     Slider,
     Icon,
     Switch,
@@ -12,8 +11,9 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FaRegLightbulb } from 'react-icons/fa';
+import DeviceCardHeader from '../DeviceCardHeader';
 
-function LightbulbCard({ device }) {
+function LightbulbCard({ device, onDeleted }) {
     const [color, setColor] = useState(device.color);
     const [brightness, setBrightness] = useState(device.brightness);
     const [isOn, setIsOn] = useState(device.status === "on")
@@ -21,13 +21,7 @@ function LightbulbCard({ device }) {
 
     return (
         <Card.Root height='230px' width='280px'>
-            <Card.Header bg="#A31D1D" rounded={10} p={4}>
-                <Flex justify="center" align="center" height="100%">
-                    <Text color="white" fontSize="xl" fontWeight="bold">
-                        {device.location_name} - {device.device_type}
-                    </Text>
-                </Flex>
-            </Card.Header>
+            <DeviceCardHeader device={device} onDeleted={onDeleted} />
             <Card.Body bg="white" rounded={10} p={4}>
                 <Flex width="100%" align="center" justifyContent={'space-between'}>
                     <Switch.Root

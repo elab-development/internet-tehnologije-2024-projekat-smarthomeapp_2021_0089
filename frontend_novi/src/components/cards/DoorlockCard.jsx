@@ -1,8 +1,9 @@
 import { BsDoorClosedFill, BsDoorOpenFill } from "react-icons/bs";
 import { Card, Flex, Text, Icon } from '@chakra-ui/react';
 import { useState } from 'react';
+import DeviceCardHeader from "../DeviceCardHeader";
 
-function DoorlockCard({ device }) {
+function DoorlockCard({ device, onDeleted }) {
     const [status, setStatus] = useState(device.status);
 
     const handleToggle = () => {
@@ -11,13 +12,7 @@ function DoorlockCard({ device }) {
 
     return (
         <Card.Root height="230px" width='280px'>
-            <Card.Header bg="#A31D1D" rounded={10} p={4}>
-                <Flex justify="center" align="center" height="100%">
-                    <Text color="white" fontSize="xl" fontWeight="bold">
-                        {device.location_name} - {device.device_type}
-                    </Text>
-                </Flex>
-            </Card.Header>
+<DeviceCardHeader device={device} onDeleted={onDeleted} />
             <Card.Body bg="white" p={4} rounded={10}>
                 <Flex direction="column" align="center" justify="center" height="100%" gap={3}>
                     <Icon

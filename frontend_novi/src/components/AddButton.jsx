@@ -2,16 +2,16 @@ import { useState } from "react";
 import { IconButton } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa";
 import AddDeviceDialog from "./AddDeviceDialog";
-import {useToast} from "react";
 
-export default function AddButton() {
+
+export default function AddButton({ onDeviceCreated }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreateDevice = async ({ location, deviceType }) => {
     setIsLoading(true);
-    
+
     try {
       const authToken = localStorage.getItem('access_token');
       if (!authToken) {
@@ -35,7 +35,9 @@ export default function AddButton() {
       if (!response.ok) {
         throw new Error(result.detail || "Failed to create device");
       }
-      return result;
+      if (onDeviceCreated) {
+        onDeviceCreated(result);
+      }
 
     } catch (error) {
       console.error('Error creating device:', error);
