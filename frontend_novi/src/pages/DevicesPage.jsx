@@ -1,80 +1,25 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import DevicesSideBar from '../components/DevicesSideBar';
 import ThermostatCard from '../components/cards/ThermostatCard';
 import LightbulbCard from '../components/cards/LightbulbCard';
 import DoorlockCard from '../components/cards/DoorlockCard';
 import AirpurifierCard from '../components/cards/AirpurifierCard';
 import DevicesUpperBar from '../components/DevicesUpperBar';
-
-
+import { useDevices } from '../hooks/useDevices';
+import { useLocations } from '../hooks/useLocations';
 
 function Devices() {
-  const [devices, setDevices] = useState([]);
   const [deviceTypeFilter, setDeviceTypeFilter] = useState(null);
   const [locationFilter, setLocationFilter] = useState(null);
-  const [locations, setLocations] = useState([]);
 
   const token = localStorage.getItem("access_token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  const fetchDevices = useCallback(() => {
-    if (!token) return;
-    let url = "http://localhost:8000/devices/";
-    const params = new URLSearchParams();
+  const { devices, setDevices } = useDevices(token, deviceTypeFilter, locationFilter);
+  const { locations } = useLocations(token);
 
-    if (deviceTypeFilter) params.append("device_type", deviceTypeFilter);
-    if (locationFilter) params.append("location_id", locationFilter);
-
-    url += `?${params.toString()}`;
-
-    fetch(url, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => res.json())
-      .then(data => setDevices(data?.data ?? []))
-      .catch(err => {
-        console.error("Failed to load devices:", err);
-        setDevices([]);
-      });
-  }, [deviceTypeFilter, locationFilter, token]);
-
-
-  useEffect(() => {
-    fetchDevices();
-  }, [fetchDevices]);
-
-  useEffect(() => {
-    const fetchUserAndLocations = async () => {
-      if (!token) return;
-
-      try {
-        const userRes = await fetch("http://localhost:8000/users/me", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (!userRes.ok) throw new Error("Failed to fetch user");
-
-        const userData = await userRes.json();
-
-        const locRes = await fetch(`http://localhost:8000/users/${userData.user_id}/locations`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (!locRes.ok) throw new Error("Failed to fetch locations");
-
-        const locData = await locRes.json();
-        setLocations(locData);
-      } catch (err) {
-        console.error(err.message);
-      }
-    };
-
-    fetchUserAndLocations();
-  }, [token]);
-
-
-
+  // Handlers for device add/delete
   const handleDeviceDeleted = (deletedId) => {
     setDevices(prev => prev.filter(device => device.device_id !== deletedId));
   };
@@ -83,14 +28,12 @@ function Devices() {
     setDevices(prev => [...prev, newDevice]);
   };
 
-
-  // Renderuje kartice na osnovu tipa
   const renderDeviceCard = (device) => {
     const commonProps = { device, onDeleted: handleDeviceDeleted };
 
     switch (device.device_type) {
       case "thermostat":
-        return <ThermostatCard {...commonProps} />;;
+        return <ThermostatCard {...commonProps} />;
       case "lightbulb":
         return <LightbulbCard {...commonProps} />;
       case "airpurifier":
@@ -102,11 +45,8 @@ function Devices() {
     }
   };
 
-
-
   return (
     <Flex align="flex-start" width="100%">
-
       <DevicesSideBar
         onFilter={setDeviceTypeFilter}
         onDeviceAdded={handleDeviceAdded}
@@ -125,10 +65,7 @@ function Devices() {
         </Flex>
       </Box>
     </Flex>
-  )
-
-
+  );
 }
-
 
 export default Devices;
