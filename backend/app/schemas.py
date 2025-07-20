@@ -25,6 +25,7 @@ class TokenResponse(BaseModel):
     name: str
     last_name: str
     email: str
+    role: str
 
 
 class DeviceResponse(BaseModel):

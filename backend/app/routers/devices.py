@@ -40,15 +40,18 @@ def get_devices(
     try:
         # inicijalni upit
         user_locations = current_user.locations
+        is_admin_or_owner = current_user.role.name in ["Admin", "Owner"]
 
-        if not user_locations:
-            raise HTTPException(status_code=404, detail="No locations found for the user")
+        if is_admin_or_owner:
+            query = db.query(models.Device)
+        else:
+            user_locations = current_user.locations
+            if not user_locations:
+                raise HTTPException(status_code=404, detail="No locations found for the user")
+            query = db.query(models.Device).filter(
+             models.Device.location_id.in_([loc.location_id for loc in user_locations])
+            )
 
-        # uzima uredjaje sa tih lokacija
-        query = (
-            db.query(models.Device)
-            .filter(models.Device.location_id.in_([loc.location_id for loc in user_locations]))    
-        )
         # filtriranje prema lokaciji
         if location_id is not None:
             query = query.join(models.Location).filter(models.Location.location_id == location_id)
@@ -97,8 +100,11 @@ def get_devices(
 def create_device(
     device: schemas.DeviceCreate,
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(require_admin)
+    current_user: models.User = Depends(get_current_user)
 ):
+    if current_user.role.name not in ["Admin", "Owner"]:
+        raise HTTPException(status_code=403, detail="Only Admin and Owner can create devices")
+
     model_map = {
         "device": models.Device,
         "thermostat": models.Thermostat,
@@ -146,11 +152,18 @@ def create_device(
 
 
 @router.delete("/devices/{device_id}", status_code=204)
-def delete_device(device_id: int, db: Session = Depends(get_db), auth: models.User = Depends(require_admin)):
+def delete_device(device_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)
+):
     device = db.query(models.Device).filter(models.Device.device_id == device_id).first()
 
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
+    
+    if current_user.role.name not in ["Admin", "Owner"]:
+        # Regular korisnici samo uređaji na njihovim lokacijama
+        if device.location_id not in [loc.location_id for loc in current_user.locations]:
+            raise HTTPException(status_code=403, detail="You do not have access to delete this device")
+
 
     db.delete(device)
     db.commit()
@@ -170,8 +183,9 @@ def update_device(
         raise HTTPException(status_code=404, detail="Device not found")
 
     # Proveravam da li korisnik ima pristup lokaciji uređaja
-    if device.location_id not in [loc.location_id for loc in current_user.locations]:
-        raise HTTPException(status_code=403, detail="You do not have access to this device")
+    if current_user.role.name not in ["Admin", "Owner"]:
+        if device.location_id not in [loc.location_id for loc in current_user.locations]:
+            raise HTTPException(status_code=403, detail="You do not have access to update this device")
 
     # Pretvaram update podatke u dict i uklanjam None vrednosti
     update_dict = update_data.model_dump(exclude_unset=True)

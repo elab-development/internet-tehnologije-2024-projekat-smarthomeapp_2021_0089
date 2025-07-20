@@ -16,6 +16,7 @@ function Devices() {
   const [locations, setLocations] = useState([]);
 
   const token = localStorage.getItem("access_token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const fetchDevices = useCallback(() => {
     if (!token) return;
@@ -109,6 +110,7 @@ function Devices() {
       <DevicesSideBar
         onFilter={setDeviceTypeFilter}
         onDeviceAdded={handleDeviceAdded}
+        role={user.role}
       />
 
       <Box flex="1" p={3}>

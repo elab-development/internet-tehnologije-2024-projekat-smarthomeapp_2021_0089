@@ -96,7 +96,8 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
         "token_type": "bearer",
         "name": user.name,
         "last_name": user.lastname,
-        "email": user.mail
+        "email": user.mail,
+        "role": user.role.name
     }
 
 
@@ -137,4 +138,10 @@ def get_user_locations(
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user.locations
+    if user.role.name in ["Admin", "Owner"]:
+        # Vrati sve sobe ako je korisnik admin ili owner
+        all_locations = db.query(models.Location).all()
+        return all_locations
+    else:
+        # Vrati samo sobe koje su povezane sa korisnikom
+        return user.locations

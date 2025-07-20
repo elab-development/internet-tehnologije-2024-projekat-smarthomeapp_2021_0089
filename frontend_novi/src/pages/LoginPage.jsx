@@ -30,12 +30,12 @@ function Login() {
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Login failed");
-      }
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Login failed");
+      }
+      
       console.log("Response data:", data);
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem(
@@ -44,6 +44,7 @@ function Login() {
           name: data.name,
           lastName: data.last_name,
           email: data.email,
+          role: data.role
         })
       );
 

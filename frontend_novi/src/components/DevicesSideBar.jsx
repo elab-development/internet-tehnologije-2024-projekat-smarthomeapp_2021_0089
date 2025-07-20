@@ -7,7 +7,7 @@ import { useState } from "react";
 import AddButton from './AddButton';
 import { MdAir } from 'react-icons/md';
 
-export default function DevicesSideBar({ onFilter, onDeviceAdded }) {
+export default function DevicesSideBar({ onFilter, onDeviceAdded, role }) {
     const icons = [
         { id: "thermostat", icon: LuThermometerSun },
         { id: "lightbulb", icon: FaRegLightbulb },
@@ -50,7 +50,9 @@ export default function DevicesSideBar({ onFilter, onDeviceAdded }) {
                     ))}
                 </Flex>
             </Box>
-            <AddButton onDeviceCreated={onDeviceAdded} />
+            {(role === "Admin" || role === "Owner") && (
+                <AddButton onDeviceCreated={onDeviceAdded} />
+            )}
         </Flex>
     )
 }
