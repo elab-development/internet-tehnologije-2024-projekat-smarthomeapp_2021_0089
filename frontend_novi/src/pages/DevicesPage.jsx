@@ -1,13 +1,14 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex } from "@chakra-ui/react";
 import { useState } from "react";
-import DevicesSideBar from '../components/DevicesSideBar';
-import ThermostatCard from '../components/cards/ThermostatCard';
-import LightbulbCard from '../components/cards/LightbulbCard';
-import DoorlockCard from '../components/cards/DoorlockCard';
-import AirpurifierCard from '../components/cards/AirpurifierCard';
-import DevicesUpperBar from '../components/DevicesUpperBar';
-import { useDevices } from '../hooks/useDevices';
-import { useLocations } from '../hooks/useLocations';
+import DevicesSideBar from "../components/DevicesSideBar";
+import ThermostatCard from "../components/cards/ThermostatCard";
+import LightbulbCard from "../components/cards/LightbulbCard";
+import DoorlockCard from "../components/cards/DoorlockCard";
+import AirpurifierCard from "../components/cards/AirpurifierCard";
+import DevicesUpperBar from "../components/DevicesUpperBar";
+import { useDevices } from "../hooks/useDevices";
+import { useLocations } from "../hooks/useLocations";
+import BreadcrumbNav from "../components/BreadcrumbNav";
 
 function Devices() {
   const [deviceTypeFilter, setDeviceTypeFilter] = useState(null);
@@ -16,16 +17,22 @@ function Devices() {
   const token = localStorage.getItem("access_token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  const { devices, setDevices } = useDevices(token, deviceTypeFilter, locationFilter);
+  const { devices, setDevices } = useDevices(
+    token,
+    deviceTypeFilter,
+    locationFilter
+  );
   const { locations } = useLocations(token);
 
   // Handlers for device add/delete
   const handleDeviceDeleted = (deletedId) => {
-    setDevices(prev => prev.filter(device => device.device_id !== deletedId));
+    setDevices((prev) =>
+      prev.filter((device) => device.device_id !== deletedId)
+    );
   };
 
   const handleDeviceAdded = (newDevice) => {
-    setDevices(prev => [...prev, newDevice]);
+    setDevices((prev) => [...prev, newDevice]);
   };
 
   const renderDeviceCard = (device) => {
@@ -54,7 +61,23 @@ function Devices() {
       />
 
       <Box flex="1" p={3}>
-        <DevicesUpperBar onLocationFilter={setLocationFilter} locations={locations} />
+        <DevicesUpperBar
+          onLocationFilter={setLocationFilter}
+          locations={locations}
+        />
+
+        <BreadcrumbNav
+          locationFilter={locationFilter}
+          deviceTypeFilter={deviceTypeFilter}
+          onResetAll={() => {
+            setLocationFilter(null);
+            setDeviceTypeFilter(null);
+          }}
+          onResetTypeOnly={() => {
+            setDeviceTypeFilter(null);
+          }}
+          locations={locations}
+        />
 
         <Flex wrap="wrap" gap={3}>
           {devices.map((device) => (
