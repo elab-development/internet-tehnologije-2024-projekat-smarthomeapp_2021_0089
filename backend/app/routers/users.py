@@ -9,7 +9,8 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import List
 from dependencies import require_admin
 from dependencies import get_current_user
-
+from typing import List
+from fastapi import Body
 
 router = APIRouter(
     prefix="/users",
@@ -22,6 +23,12 @@ router = APIRouter(
 @router.get("/")
 def read_users():
     return [{"username": "Sponge"}, {"username": "Bob"}]
+
+#vraca sve role
+@router.get("/roles", response_model=List[schemas.Role])
+def get_all_roles(db: Session = Depends(get_db)):
+    roles = db.query(models.Role).all()
+    return roles
 
 @router.get("/me", response_model=schemas.UserResponse)
 def get_logged_in_user(
@@ -145,3 +152,98 @@ def get_user_locations(
     else:
         # Vrati samo sobe koje su povezane sa korisnikom
         return user.locations
+    
+
+#promena role korisnika od strane admina
+@router.put("/{user_id}/role")
+def update_user_role(
+    user_id: int,
+    role_id: int,  # 1 = Admin, 2 = Regular, 3 = Owner
+    db: Session = Depends(get_db),
+    admin_user: models.User = Depends(require_admin)
+):
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    role = db.query(models.Role).filter(models.Role.role_id == role_id).first()
+    if not role:
+        raise HTTPException(status_code=400, detail="Invalid role ID")
+
+    if user.role_id == role.role_id:
+        return {
+            "message": f"User {user.mail} already has the '{role.name}' role",
+            "no_change": True
+        }
+
+    user.role_id = role.role_id
+    db.commit()
+    db.refresh(user)
+
+    return {"message": f"Changed role for user {user.mail} to '{role.name}'"}
+
+
+
+#dodeljivanje soba korisniku od strane admina
+@router.put("/{user_id}/locations")
+def add_locations_to_user(
+    user_id: int,
+    location_ids: List[int],
+    db: Session = Depends(get_db),
+    admin_user: models.User = Depends(require_admin)
+):
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    valid_locations = db.query(models.Location).filter(models.Location.location_id.in_(location_ids)).all()
+
+    if len(valid_locations) != len(set(location_ids)):
+        raise HTTPException(status_code=400, detail="Invalid locations")
+
+    #dodaje samo one sobe koje korisnik nema
+    current_location_ids = {loc.location_id for loc in user.locations}
+    new_locations = [loc for loc in valid_locations if loc.location_id not in current_location_ids]
+
+    if not new_locations:
+        return {"message": "User already has access to these locations"}
+
+    user.locations.extend(new_locations)
+    db.commit()
+    db.refresh(user)
+
+    return {"message": f"Added {len(new_locations)} new locations to user {user.mail}"}
+
+
+#uklanjanje pristupa sobama korisnika od strane admina
+@router.delete("/{user_id}/locations")
+def remove_locations_from_user(
+    user_id: int,
+    location_ids: List[int] = Body(..., embed=True),  #{ "location_ids": [1, 2, 3] }
+    db: Session = Depends(get_db),
+    admin_user: models.User = Depends(require_admin)
+):
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    #filtriranje korisnikovih trenutnih soba koje se poklapaju sa sobama za brisanje
+    locations_to_remove = [
+        loc for loc in user.locations if loc.location_id in location_ids
+    ]
+
+    if not locations_to_remove:
+        raise HTTPException(status_code=404, detail="User does not have access to these locations")
+
+    for loc in locations_to_remove:
+        user.locations.remove(loc)
+
+    db.commit()
+    db.refresh(user)
+
+    return {"message": f"Deleted access to {len(locations_to_remove)} locations for user {user.mail}"}
+
+
+
+
+

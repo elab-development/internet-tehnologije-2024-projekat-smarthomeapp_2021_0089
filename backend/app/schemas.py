@@ -86,3 +86,10 @@ class Location(BaseModel):
     name: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class Role(BaseModel):
+    role_id: int
+    name: str
+    description: str
+
+    model_config = ConfigDict(from_attributes=True)

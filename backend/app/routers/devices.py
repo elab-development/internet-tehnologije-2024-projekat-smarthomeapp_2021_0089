@@ -296,3 +296,9 @@ def get_devices_by_location(location_id: int, db: Session = Depends(get_db), cur
             color=getattr(d, "color", None),
         ) for d in devices
     ]
+
+#vraca sve lokacije 
+@router.get("/locations", response_model=List[schemas.Location])
+def get_all_locations(db: Session = Depends(get_db)):
+    locations = db.query(models.Location).all()
+    return locations
