@@ -13,7 +13,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/devices",
+    tags=["devices"]
+)
 """
 Kombinovana funkcija za paginaciju, filtriranje i sortiranje uredjaja
 Parametri:
@@ -23,7 +26,7 @@ Parametri:
 - device_type (str): Tip uredjaja za filtriranje (opciono)
 - sort (str): Redosled sortiranja (asc ili desc), podrazumevano asc
 """
-@router.get("/devices/")
+@router.get("/")
 def get_devices(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
@@ -96,7 +99,7 @@ def get_devices(
 #Filtriranje po lokaciji i paginacija:GET /devices/?location_id=2&page=1&page_size=5
 #Sortiranje i filtriranje:GET /devices/?device_type=sensor&sort=desc&page=2&page_size=3
 
-@router.post("/devices", status_code=201)
+@router.post("/", status_code=201)
 def create_device(
     device: schemas.DeviceCreate,
     db: Session = Depends(get_db),
@@ -151,7 +154,7 @@ def create_device(
     )
 
 
-@router.delete("/devices/{device_id}", status_code=204)
+@router.delete("/{device_id}", status_code=204)
 def delete_device(device_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)
 ):
     device = db.query(models.Device).filter(models.Device.device_id == device_id).first()
@@ -170,7 +173,7 @@ def delete_device(device_id: int, db: Session = Depends(get_db), current_user: m
     return
 
 
-@router.put("/devices/{device_id}")
+@router.put("/{device_id}")
 def update_device(
     device_id: int,
     update_data: schemas.DeviceUpdate,
@@ -199,7 +202,7 @@ def update_device(
 
 
 #eksport podataka (uredjaji za datog korisnika)
-@router.get("/devices/export/")
+@router.get("/export/")
 def export_devices(
     format: str = Query(..., regex="^(csv|pdf)$"), #korisnik moze da bira samo ove formate
     db: Session = Depends(get_db),
@@ -272,33 +275,3 @@ def export_devices(
         raise HTTPException(status_code=400, detail="Unsupported format")
     
 
-# ugnjezdena ruta - vraca sve uredjaje na datoj lokaciji    
-@router.get("/locations/{location_id}/devices", response_model=List[schemas.DeviceResponse])
-def get_devices_by_location(location_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    location = db.query(models.Location).filter(models.Location.location_id == location_id).first()
-    if not location:
-        raise HTTPException(status_code=404, detail="Location not found")
-
-    # Provera da li korisnik ima pristup toj lokaciji
-    if location not in current_user.locations:
-        raise HTTPException(status_code=403, detail="Access denied")
-
-    devices = db.query(models.Device).filter(models.Device.location_id == location_id).all()
-
-    return [
-        schemas.DeviceResponse(
-            device_id=d.device_id,
-            location_name=location.name,
-            device_type=d.device_type,
-            status=d.status,
-            temperature=getattr(d, "temperature", None),
-            brightness=getattr(d, "brightness", None),
-            color=getattr(d, "color", None),
-        ) for d in devices
-    ]
-
-#vraca sve lokacije 
-@router.get("/locations", response_model=List[schemas.Location])
-def get_all_locations(db: Session = Depends(get_db)):
-    locations = db.query(models.Location).all()
-    return locations
