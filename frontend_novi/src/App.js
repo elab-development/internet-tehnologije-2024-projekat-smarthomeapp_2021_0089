@@ -12,6 +12,7 @@ import ProtectedRoute from './pages/ProtectedRoute';
 import StatisticsPage from './pages/StatisticsPage';
 import WeatherPage from './pages/WeatherPage';
 import { Navigate } from "react-router-dom";
+import AdminPanel from './pages/AdminPanelPage';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
               <Route index element={<Navigate to="statistics" replace />} />
               <Route path="statistics" element={<StatisticsPage />} />
               <Route path="weather" element={<WeatherPage />} />
+              <Route path="adminpanel" element={<AdminPanel/>}></Route>
             </Route>
             <Route path="devices" element={<Devices />} /> {/* child ruta */}
             <Route path="profile" element={<Profile />} />

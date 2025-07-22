@@ -11,6 +11,7 @@ from dependencies import require_admin
 from dependencies import get_current_user
 from typing import List
 from fastapi import Body
+from sqlalchemy.orm import joinedload
 
 router = APIRouter(
     prefix="/users",
@@ -20,9 +21,13 @@ router = APIRouter(
 
 
 
-@router.get("/")
-def read_users():
-    return [{"username": "Sponge"}, {"username": "Bob"}]
+@router.get("/", response_model=List[schemas.UserResponse])
+def get_all_users(db: Session = Depends(get_db), admin_user: models.User = Depends(require_admin)):
+    users = db.query(models.User)\
+        .options(joinedload(models.User.role), joinedload(models.User.locations))\
+        .all()
+    return users
+
 
 #vraca sve role
 @router.get("/roles", response_model=List[schemas.Role])
@@ -49,6 +54,13 @@ def get_user(id: int, db: Session = Depends(get_db)):
 
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=schemas.UserResponse)  # register user
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+
+    existing_user = db.query(models.User).filter(models.User.mail == user.mail).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
    
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
@@ -152,96 +164,52 @@ def get_user_locations(
     else:
         # Vrati samo sobe koje su povezane sa korisnikom
         return user.locations
-    
 
-#promena role korisnika od strane admina
-@router.put("/{user_id}/role")
+
+
+@router.put("/{user_id}/role", status_code=status.HTTP_200_OK)
 def update_user_role(
     user_id: int,
-    role_id: int,  # 1 = Admin, 2 = Regular, 3 = Owner
+    request: schemas.UpdateUserRoleRequest, # 1 = Admin, 2 = Regular, 3 = Owner
     db: Session = Depends(get_db),
-    admin_user: models.User = Depends(require_admin)
+    admin_user: models.User = Depends(require_admin),
 ):
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    role = db.query(models.Role).filter(models.Role.role_id == role_id).first()
+    role = db.query(models.Role).filter(models.Role.role_id == request.role_id).first()
     if not role:
         raise HTTPException(status_code=400, detail="Invalid role ID")
 
     if user.role_id == role.role_id:
-        return {
-            "message": f"User {user.mail} already has the '{role.name}' role",
-            "no_change": True
-        }
+        return {"message": f"User already has role '{role.name}'", "no_change": True}
 
     user.role_id = role.role_id
     db.commit()
     db.refresh(user)
+    return {"message": f"User role updated to '{role.name}'"}
 
-    return {"message": f"Changed role for user {user.mail} to '{role.name}'"}
-
-
-
-#dodeljivanje soba korisniku od strane admina
-@router.put("/{user_id}/locations")
-def add_locations_to_user(
+@router.put("/{user_id}/locations", status_code=status.HTTP_200_OK)
+def update_user_locations(
     user_id: int,
-    location_ids: List[int],
+    request: schemas.UpdateUserLocationsRequest,
     db: Session = Depends(get_db),
-    admin_user: models.User = Depends(require_admin)
+    admin_user: models.User = Depends(require_admin),
 ):
     user = db.query(models.User).filter(models.User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    valid_locations = db.query(models.Location).filter(models.Location.location_id.in_(location_ids)).all()
+    valid_locations = db.query(models.Location).filter(models.Location.location_id.in_(request.location_ids)).all()
+    if len(valid_locations) != len(set(request.location_ids)):
+        raise HTTPException(status_code=400, detail="One or more location IDs are invalid")
 
-    if len(valid_locations) != len(set(location_ids)):
-        raise HTTPException(status_code=400, detail="Invalid locations")
-
-    #dodaje samo one sobe koje korisnik nema
-    current_location_ids = {loc.location_id for loc in user.locations}
-    new_locations = [loc for loc in valid_locations if loc.location_id not in current_location_ids]
-
-    if not new_locations:
-        return {"message": "User already has access to these locations"}
-
-    user.locations.extend(new_locations)
+    # Replace all locations
+    user.locations = valid_locations
     db.commit()
     db.refresh(user)
-
-    return {"message": f"Added {len(new_locations)} new locations to user {user.mail}"}
-
-
-#uklanjanje pristupa sobama korisnika od strane admina
-@router.delete("/{user_id}/locations")
-def remove_locations_from_user(
-    user_id: int,
-    location_ids: List[int] = Body(..., embed=True),  #{ "location_ids": [1, 2, 3] }
-    db: Session = Depends(get_db),
-    admin_user: models.User = Depends(require_admin)
-):
-    user = db.query(models.User).filter(models.User.user_id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    #filtriranje korisnikovih trenutnih soba koje se poklapaju sa sobama za brisanje
-    locations_to_remove = [
-        loc for loc in user.locations if loc.location_id in location_ids
-    ]
-
-    if not locations_to_remove:
-        raise HTTPException(status_code=404, detail="User does not have access to these locations")
-
-    for loc in locations_to_remove:
-        user.locations.remove(loc)
-
-    db.commit()
-    db.refresh(user)
-
-    return {"message": f"Deleted access to {len(locations_to_remove)} locations for user {user.mail}"}
+    return {"message": f"User locations updated. Now has access to {len(valid_locations)} locations"}
 
 
 

@@ -78,7 +78,7 @@ return (
           <Text textAlign="center" color="red.500" mb={4}>
             {success}{' '}
             <Link color="#FEF9E1" href="/login">
-              Go to Login
+              Successful registration! Go to Login.
             </Link>
           </Text>
         )}

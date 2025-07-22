@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel, EmailStr,ConfigDict
-from typing import Optional, Literal, Union
+from typing import Optional, Literal, Union, List
 
 
 
@@ -10,13 +10,29 @@ class UserCreate(BaseModel):
     name: str
     lastname:str
 
-class UserResponse(BaseModel):
+"""class UserResponse(BaseModel):
     mail: EmailStr
     user_id: int
     name: str
     lastname: str
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True)"""
+class Role(BaseModel):
+    role_id: int
+    name: str
+
+class Location(BaseModel):
+    location_id: int
+    name: str
+
+class UserResponse(BaseModel):
+    user_id: int
+    name: str
+    lastname: str
+    mail: str
+    role_id: int
+    role: Optional[Role]
+    locations: List[Location] = []
 
 #LOGIN KORISNIKA
 class TokenResponse(BaseModel):
@@ -93,3 +109,9 @@ class Role(BaseModel):
     description: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class UpdateUserRoleRequest(BaseModel):
+    role_id: int
+
+class UpdateUserLocationsRequest(BaseModel):
+    location_ids: List[int]

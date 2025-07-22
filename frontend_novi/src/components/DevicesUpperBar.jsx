@@ -1,9 +1,11 @@
 import {
   Select,
   Box,
-  createListCollection
+  createListCollection,
+  Flex
 } from '@chakra-ui/react';
 import { useState, useMemo } from 'react';
+import ExportButton from './ExportButton';
 
 export default function DevicesUpperBar({ locations, onLocationFilter }) {
   const [selectedLocation, setSelectedLocation] = useState([]);
@@ -27,7 +29,8 @@ export default function DevicesUpperBar({ locations, onLocationFilter }) {
 
 
   return (
-    <Box width="100%" mb={4} maxW="300px">
+  <Flex width="100%" justifyContent={'space-between'}>
+    <Box flex="1" maxW="300px">
       <Select.Root
         collection={locationCollection}
         value={selectedLocation}
@@ -61,5 +64,8 @@ export default function DevicesUpperBar({ locations, onLocationFilter }) {
         </Select.Positioner>
       </Select.Root>
     </Box>
+
+    <ExportButton/>
+  </Flex>
   );
 }
