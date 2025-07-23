@@ -1,8 +1,24 @@
-DB_USERNAME="root"
-DB_PASSWORD="root"
-DB_HOSTNAME="localhost"
-DB_PORT="3306"
-DATABASE_NAME="smart_home_app"
-SECRET_KEY = "nas_tajni_kljuc" #sluzi za proveru autenticnosti tokena
-ALGORITHM = "HS256" #odredjuje nacin na koji se generise i proverava digitalni potpis tokena
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+from pathlib import Path
+
+
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
+class Settings(BaseSettings):
+    DB_USERNAME: str
+    DB_PASSWORD: str
+    DB_HOSTNAME: str
+    DB_PORT: int
+    DATABASE_NAME: str
+
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    WEATHER_API_KEY: str
+
+    class Config:
+        env_file = env_path  #pydantic reload
+
+settings = Settings()

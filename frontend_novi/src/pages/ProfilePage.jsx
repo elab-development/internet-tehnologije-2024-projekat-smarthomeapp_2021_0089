@@ -1,15 +1,9 @@
-// export default function Profile() {
-//   return <div>Profile</div>;
-// }
 import { useNavigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Flex,
-  Heading,
-  Input,
   Button,
   Text,
-  Link,
   Card,
   HStack,
 } from "@chakra-ui/react";
@@ -80,39 +74,6 @@ function Profile() {
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     navigate("/login");
-  };
-
-  const handleChangePassword = async () => {
-    const email = user.mail;
-    const new_password = prompt("Enter the new password:");
-
-    if (!new_password) {
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "http://localhost:8000/users/reset-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, new_password }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.detail || "Error! Could not change the password"
-        );
-      }
-
-      alert("Password changed successfuly");
-    } catch (err) {
-      alert("Error: " + err.message);
-    }
   };
 
   return (

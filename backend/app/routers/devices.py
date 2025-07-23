@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 from db import get_db
 import models
 from sqlalchemy import asc, desc
-from typing import List
-from dependencies import get_current_user, require_admin
+from dependencies import get_current_user
 import schemas
 from fastapi.responses import StreamingResponse
 import io

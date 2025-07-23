@@ -1,9 +1,8 @@
 from fastapi.security import OAuth2PasswordBearer
 from models import User
-from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from jose import jwt
-import settings
+from settings import settings
 from db import get_db
 from sqlalchemy.orm import Session
 

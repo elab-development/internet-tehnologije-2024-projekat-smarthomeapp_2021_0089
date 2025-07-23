@@ -24,7 +24,7 @@ function Devices() {
   );
   const { locations } = useLocations(token);
 
-  // Handlers for device add/delete
+  // handlers for device add/delete
   const handleDeviceDeleted = (deletedId) => {
     setDevices((prev) =>
       prev.filter((device) => device.device_id !== deletedId)

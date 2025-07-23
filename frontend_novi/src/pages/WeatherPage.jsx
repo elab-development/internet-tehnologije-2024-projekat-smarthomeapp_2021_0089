@@ -14,7 +14,6 @@ import {
 } from "@chakra-ui/react";
 import { MdErrorOutline } from "react-icons/md";
 
-const API_KEY = "a38c686166ef4f36ad8180034252007"; // Replace with your real API key
 
 function getAqiDescription(aqi) {
   switch (aqi) {
@@ -34,14 +33,13 @@ export default function WeatherPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Step 1: Get user city from IP
+    // uzima grad pomocu ip adrese
     fetch("http://ip-api.com/json/")
       .then((res) => res.json())
       .then((locationData) => {
         const city = locationData.city || "Belgrade";
-        return fetch(
-          `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=3&aqi=yes`
-        );
+        // fetchuje sa becka prognozu
+        return fetch(`http://localhost:8000/api/weather?city=${city}`);
       })
       .then((res) => res.json())
       .then((data) => {
@@ -110,7 +108,7 @@ export default function WeatherPage() {
           <Text fontSize="xl">{aqi} - {getAqiDescription(aqi)}</Text>
         </Box>
 
-        {/* Forecast */}
+        {/* Prognoza */}
         <Box width="100%">
           <Heading size="md" mb={4}>3-Day Forecast</Heading>
           <SimpleGrid columns={[1, 3]} columnGap="2">

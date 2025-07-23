@@ -3,14 +3,12 @@ from db import get_db
 import models,schemas,utils
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-from settings import ALGORITHM, SECRET_KEY
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
 from dependencies import require_admin
 from dependencies import get_current_user
 from typing import List
-from fastapi import Body
 from sqlalchemy.orm import joinedload
 
 router = APIRouter(

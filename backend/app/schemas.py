@@ -10,13 +10,6 @@ class UserCreate(BaseModel):
     name: str
     lastname:str
 
-"""class UserResponse(BaseModel):
-    mail: EmailStr
-    user_id: int
-    name: str
-    lastname: str
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)"""
 class Role(BaseModel):
     role_id: int
     name: str

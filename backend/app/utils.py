@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-import settings
+from settings import settings
 
 
 

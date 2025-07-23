@@ -18,12 +18,10 @@ export default function AdminPanel() {
 }, [error]);
 
 
-  // Helpers: find role name by id and role id by name
+  // nadji ime role by id
   const getRoleById = (id) => roles.find((r) => r.role_id === id);
-  const getRoleIdByName = (name) =>
-    roles.find((r) => r.name.toLowerCase() === name.toLowerCase())?.role_id;
 
-  // Load users, roles, locations on mount
+  // loaduje users, roles, locations on mount
   useEffect(() => {
     async function fetchData() {
       try {
@@ -55,10 +53,6 @@ export default function AdminPanel() {
         const locationsData = await locationsRes.json();
         const usersData = await usersRes.json();
 
-        console.log("Roles data:", rolesData);
-        console.log("Locations data:", locationsData);
-        console.log("Users data:", usersData);
-
         setRoles(Array.isArray(rolesData) ? rolesData : []);
         setLocations(Array.isArray(locationsData) ? locationsData : []);
         setUsers(
@@ -83,7 +77,7 @@ export default function AdminPanel() {
     fetchData();
   }, []);
 
-  // Handle role change locally
+  // menja rolu usera lokalno
   const updateUserRole = (userId, roleId) => {
     setUsers((prev) =>
       prev.map((user) =>
@@ -94,7 +88,7 @@ export default function AdminPanel() {
     );
   };
 
-  // Toggle location for user locally
+  // menja lokacije usera lokalno
   const toggleLocation = (userId, locationName) => {
     setUsers((prev) =>
       prev.map((user) => {
@@ -118,14 +112,14 @@ export default function AdminPanel() {
     );
   };
 
-  // Save changes for a user
+  // cuva izmene
   const saveUser = async (user) => {
     setSavingUserId(user.id);
     setError(null);
     try {
       const token = localStorage.getItem("access_token");
 
-      // Update role
+      // update role
       const roleResponse = await fetch(
         `http://localhost:8000/users/${user.id}/role`,
         {
@@ -139,7 +133,7 @@ export default function AdminPanel() {
       );
       if (!roleResponse.ok) throw new Error("Failed to update role");
 
-      // Update locations
+      // update locations
       const locationsResponse = await fetch(
         `http://localhost:8000/users/${user.id}/locations`,
         {
@@ -260,7 +254,7 @@ export default function AdminPanel() {
             return (
               <tr key={user.id}>
                 <td>{user.name}</td>
-                <td>{user.email}</td> {/* Display email */}
+                <td>{user.email}</td>
                 <td>
                   <select
                     value={user.roleId}
