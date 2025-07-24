@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import axiosInstance from "../api/axios";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -11,12 +12,11 @@ export default function AdminPanel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-  if (!error) return;
+    if (!error) return;
 
-  const timer = setTimeout(() => setError(null), 3000);
-  return () => clearTimeout(timer);
-}, [error]);
-
+    const timer = setTimeout(() => setError(null), 3000);
+    return () => clearTimeout(timer);
+  }, [error]);
 
   // nadji ime role by id
   const getRoleById = (id) => roles.find((r) => r.role_id === id);
@@ -25,57 +25,100 @@ export default function AdminPanel() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = localStorage.getItem("access_token");
-
         const [rolesRes, locationsRes, usersRes] = await Promise.all([
-          fetch("http://localhost:8000/users/roles", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch("http://localhost:8000/locations/", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch("http://localhost:8000/users/", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
+          axiosInstance.get("/users/roles"),
+          axiosInstance.get("/locations/"),
+          axiosInstance.get("/users/"),
         ]);
 
-        if (!rolesRes.ok || !locationsRes.ok || !usersRes.ok) {
-          throw new Error("Failed to load data");
-        }
-
-        const rolesData = await rolesRes.json();
-        const locationsData = await locationsRes.json();
-        const usersData = await usersRes.json();
+        const rolesData = rolesRes.data;
+        const locationsData = locationsRes.data;
+        const usersData = usersRes.data;
 
         setRoles(Array.isArray(rolesData) ? rolesData : []);
         setLocations(Array.isArray(locationsData) ? locationsData : []);
         setUsers(
           Array.isArray(usersData)
             ? usersData.map((user) => ({
-              id: user.user_id,
-              name: `${user.name} ${user.lastname}`,
-              email: user.mail,
-              roleId: user.role_id,
-              roleName: user.role?.name || "",
-              locations: (user.locations || []).map((loc) => loc.name),
-              locationIds: (user.locations || []).map((loc) => loc.location_id),
-            }))
+                id: user.user_id,
+                name: `${user.name} ${user.lastname}`,
+                email: user.mail,
+                roleId: user.role_id,
+                roleName: user.role?.name || "",
+                locations: (user.locations || []).map((loc) => loc.name),
+                locationIds: (user.locations || []).map(
+                  (loc) => loc.location_id
+                ),
+              }))
             : []
         );
         setLoading(false);
       } catch (err) {
-        setError(err.message || "Unknown error");
+        setError(
+          err?.response?.data?.message || err.message || "Unknown error"
+        );
         setLoading(false);
       }
     }
     fetchData();
   }, []);
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       const token = localStorage.getItem("access_token");
+
+  //       const [rolesRes, locationsRes, usersRes] = await Promise.all([
+  //         fetch("http://localhost:8000/users/roles", {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }),
+  //         fetch("http://localhost:8000/locations/", {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }),
+  //         fetch("http://localhost:8000/users/", {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }),
+  //       ]);
+
+  //       if (!rolesRes.ok || !locationsRes.ok || !usersRes.ok) {
+  //         throw new Error("Failed to load data");
+  //       }
+
+  //       const rolesData = await rolesRes.json();
+  //       const locationsData = await locationsRes.json();
+  //       const usersData = await usersRes.json();
+
+  //       setRoles(Array.isArray(rolesData) ? rolesData : []);
+  //       setLocations(Array.isArray(locationsData) ? locationsData : []);
+  //       setUsers(
+  //         Array.isArray(usersData)
+  //           ? usersData.map((user) => ({
+  //               id: user.user_id,
+  //               name: `${user.name} ${user.lastname}`,
+  //               email: user.mail,
+  //               roleId: user.role_id,
+  //               roleName: user.role?.name || "",
+  //               locations: (user.locations || []).map((loc) => loc.name),
+  //               locationIds: (user.locations || []).map(
+  //                 (loc) => loc.location_id
+  //               ),
+  //             }))
+  //           : []
+  //       );
+  //       setLoading(false);
+  //     } catch (err) {
+  //       setError(err.message || "Unknown error");
+  //       setLoading(false);
+  //     }
+  //   }
+  //   fetchData();
+  // }, []);
 
   // menja rolu usera lokalno
   const updateUserRole = (userId, roleId) => {
@@ -107,7 +150,11 @@ export default function AdminPanel() {
           newLocations = [...user.locations, locationName];
           newLocationIds = [...user.locationIds, locObj.location_id];
         }
-        return { ...user, locations: newLocations, locationIds: newLocationIds };
+        return {
+          ...user,
+          locations: newLocations,
+          locationIds: newLocationIds,
+        };
       })
     );
   };
@@ -117,43 +164,67 @@ export default function AdminPanel() {
     setSavingUserId(user.id);
     setError(null);
     try {
-      const token = localStorage.getItem("access_token");
-
       // update role
-      const roleResponse = await fetch(
-        `http://localhost:8000/users/${user.id}/role`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ role_id: user.roleId }),
-        }
-      );
-      if (!roleResponse.ok) throw new Error("Failed to update role");
+      await axiosInstance.put(`/users/${user.id}/role`, {
+        role_id: user.roleId,
+      });
 
       // update locations
-      const locationsResponse = await fetch(
-        `http://localhost:8000/users/${user.id}/locations`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ location_ids: user.locationIds }),
-        }
-      );
-      if (!locationsResponse.ok) throw new Error("Failed to update locations");
+      await axiosInstance.put(`/users/${user.id}/locations`, {
+        location_ids: user.locationIds,
+      });
 
       alert(`User ${user.name} saved successfully`);
     } catch (err) {
-      setError(err.message || "Failed to save user");
+      setError(
+        err.response?.data?.message || err.message || "Failed to save user"
+      );
     } finally {
       setSavingUserId(null);
     }
   };
+
+  // const saveUser = async (user) => {
+  //   setSavingUserId(user.id);
+  //   setError(null);
+  //   try {
+  //     const token = localStorage.getItem("access_token");
+
+  //     // update role
+  //     const roleResponse = await fetch(
+  //       `http://localhost:8000/users/${user.id}/role`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({ role_id: user.roleId }),
+  //       }
+  //     );
+  //     if (!roleResponse.ok) throw new Error("Failed to update role");
+
+  //     // update locations
+  //     const locationsResponse = await fetch(
+  //       `http://localhost:8000/users/${user.id}/locations`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: JSON.stringify({ location_ids: user.locationIds }),
+  //       }
+  //     );
+  //     if (!locationsResponse.ok) throw new Error("Failed to update locations");
+
+  //     alert(`User ${user.name} saved successfully`);
+  //   } catch (err) {
+  //     setError(err.message || "Failed to save user");
+  //   } finally {
+  //     setSavingUserId(null);
+  //   }
+  // };
 
   if (loading) return <p>Loading...</p>;
 
@@ -231,9 +302,7 @@ export default function AdminPanel() {
       `}</style>
 
       {error && (
-        <div style={{ color: "red", marginBottom: 16 }}>
-          ⚠️ {error}
-        </div>
+        <div style={{ color: "red", marginBottom: 16 }}>⚠️ {error}</div>
       )}
       <table>
         <thead>

@@ -1,13 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  Flex,
-  Button,
-  Text,
-  Card,
-  HStack,
-} from "@chakra-ui/react";
+import { Flex, Button, Text, Card, HStack } from "@chakra-ui/react";
 import ChangePasswordDialog from "../components/ChangePasswordDialog";
+import axiosInstance from "../api/axios";
 
 function Profile() {
   const navigate = useNavigate();
@@ -19,46 +14,19 @@ function Profile() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        setError("No access token found");
-        setLoading(false);
-        return;
-      }
-
       try {
-        const response = await fetch("http://localhost:8000/users/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.detail || "Failed to fetch user data");
-        }
-
-        const data = await response.json();
+        const response = await axiosInstance.get("/users/me");
+        const data = response.data;
         setUser(data);
 
-        const locationsResponse = await fetch(
-          `http://localhost:8000/users/${data.user_id}/locations`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const locationsResponse = await axiosInstance.get(
+          `/users/${data.user_id}/locations`
         );
 
-        if (!locationsResponse.ok) {
-          const errData = await locationsResponse.json();
-          throw new Error(errData.detail || "Failed to fetch locations");
-        }
-
-        const locationsData = await locationsResponse.json();
-        setLocations(locationsData);
+        setLocations(locationsResponse.data);
       } catch (err) {
-        setError(err.message);
+        const message = err.response?.data?.detail || err.message;
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -66,6 +34,56 @@ function Profile() {
 
     fetchUser();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const token = localStorage.getItem("access_token");
+  //     if (!token) {
+  //       setError("No access token found");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     try {
+  //       const response = await fetch("http://localhost:8000/users/me", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         const errData = await response.json();
+  //         throw new Error(errData.detail || "Failed to fetch user data");
+  //       }
+
+  //       const data = await response.json();
+  //       setUser(data);
+
+  //       const locationsResponse = await fetch(
+  //         `http://localhost:8000/users/${data.user_id}/locations`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       if (!locationsResponse.ok) {
+  //         const errData = await locationsResponse.json();
+  //         throw new Error(errData.detail || "Failed to fetch locations");
+  //       }
+
+  //       const locationsData = await locationsResponse.json();
+  //       setLocations(locationsData);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchUser();
+  // }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

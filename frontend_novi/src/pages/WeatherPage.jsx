@@ -10,20 +10,28 @@ import {
   Icon,
   Container,
   SimpleGrid,
-  Alert
+  Alert,
 } from "@chakra-ui/react";
 import { MdErrorOutline } from "react-icons/md";
-
+import axios from "axios";
+import axiosInstance from "../api/axios";
 
 function getAqiDescription(aqi) {
   switch (aqi) {
-    case 1: return "Good";
-    case 2: return "Moderate";
-    case 3: return "Unhealthy for Sensitive Groups";
-    case 4: return "Unhealthy";
-    case 5: return "Very Unhealthy";
-    case 6: return "Hazardous";
-    default: return "Unknown";
+    case 1:
+      return "Good";
+    case 2:
+      return "Moderate";
+    case 3:
+      return "Unhealthy for Sensitive Groups";
+    case 4:
+      return "Unhealthy";
+    case 5:
+      return "Very Unhealthy";
+    case 6:
+      return "Hazardous";
+    default:
+      return "Unknown";
   }
 }
 
@@ -33,25 +41,44 @@ export default function WeatherPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // uzima grad pomocu ip adrese
-    fetch("http://ip-api.com/json/")
-      .then((res) => res.json())
-      .then((locationData) => {
-        const city = locationData.city || "Belgrade";
-        // fetchuje sa becka prognozu
-        return fetch(`http://localhost:8000/api/weather?city=${city}`);
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        setWeatherData(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
+    const fetchWeather = async () => {
+      try {
+        const locationRes = await axios.get("http://ip-api.com/json/");
+        const city = locationRes.data.city || "Belgrade";
+
+        const weatherRes = await axiosInstance.get(`/api/weather?city=${city}`);
+        setWeatherData(weatherRes.data);
+      } catch (err) {
         console.error(err);
         setError("Failed to fetch weather data.");
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    fetchWeather();
   }, []);
+
+  // useEffect(() => {
+  //   // uzima grad pomocu ip adrese
+  //   fetch("http://ip-api.com/json/")
+  //     .then((res) => res.json())
+  //     .then((locationData) => {
+  //       const city = locationData.city || "Belgrade";
+  //       // fetchuje sa becka prognozu
+  //       return fetch(`http://localhost:8000/api/weather?city=${city}`);
+  //     })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setWeatherData(data);
+  //       setIsLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //       setError("Failed to fetch weather data.");
+  //       setIsLoading(false);
+  //     });
+  // }, []);
 
   if (isLoading) {
     return (
@@ -63,14 +90,16 @@ export default function WeatherPage() {
 
   if (error) {
     return (
-          <Box p={6}>
-      <Alert.Root status="error" variant="subtle" colorScheme="red">
-        <Alert.Indicator>
-          <Icon ><MdErrorOutline/></Icon>
-        </Alert.Indicator>
-        <Alert.Title>{error}</Alert.Title>
-      </Alert.Root>
-    </Box>
+      <Box p={6}>
+        <Alert.Root status="error" variant="subtle" colorScheme="red">
+          <Alert.Indicator>
+            <Icon>
+              <MdErrorOutline />
+            </Icon>
+          </Alert.Indicator>
+          <Alert.Title>{error}</Alert.Title>
+        </Alert.Root>
+      </Box>
     );
   }
 
@@ -89,10 +118,16 @@ export default function WeatherPage() {
         width="100%"
       >
         {/* Current Weather */}
-        <Heading size="lg">{location.name}, {location.country}</Heading>
+        <Heading size="lg">
+          {location.name}, {location.country}
+        </Heading>
 
         <HStack spacing={4}>
-          <Image src={current.condition.icon} alt="weather icon" boxSize="50px" />
+          <Image
+            src={current.condition.icon}
+            alt="weather icon"
+            boxSize="50px"
+          />
           <Text fontSize="2xl" fontWeight="bold">
             {current.temp_c}°C
           </Text>
@@ -105,12 +140,16 @@ export default function WeatherPage() {
         {/* AQI */}
         <Box textAlign="center">
           <Text fontWeight="semibold">Air Quality Index (AQI)</Text>
-          <Text fontSize="xl">{aqi} - {getAqiDescription(aqi)}</Text>
+          <Text fontSize="xl">
+            {aqi} - {getAqiDescription(aqi)}
+          </Text>
         </Box>
 
         {/* Prognoza */}
         <Box width="100%">
-          <Heading size="md" mb={4}>3-Day Forecast</Heading>
+          <Heading size="md" mb={4}>
+            3-Day Forecast
+          </Heading>
           <SimpleGrid columns={[1, 3]} columnGap="2">
             {forecast.forecastday.map((day) => (
               <Box

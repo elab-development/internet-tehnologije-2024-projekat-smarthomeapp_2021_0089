@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IconButton } from "@chakra-ui/react";
 import { FaPlus } from "react-icons/fa";
 import AddDeviceDialog from "./AddDeviceDialog";
-
+import axiosInstance from "../api/axios";
 
 export default function AddButton({ onDeviceCreated }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -13,38 +13,63 @@ export default function AddButton({ onDeviceCreated }) {
     setIsLoading(true);
 
     try {
-      const authToken = localStorage.getItem('access_token');
-      if (!authToken) {
-        throw new Error("Authentication token missing");
-      }
-
-      const response = await fetch("http://localhost:8000/devices", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({
-          device_type: deviceType,
-          location_name: location
-        })
+      const response = await axiosInstance.post("/devices", {
+        device_type: deviceType,
+        location_name: location,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.detail || "Failed to create device");
-      }
       if (onDeviceCreated) {
-        onDeviceCreated(result);
+        onDeviceCreated(response.data);
       }
-
     } catch (error) {
-      console.error('Error creating device:', error);
-      throw error;
+      console.error("Error creating device:", error);
+      throw new Error(
+        error.response?.data?.detail || "Failed to create device"
+      );
     } finally {
       setIsLoading(false);
     }
+
+    // try {
+    //   const authToken = localStorage.getItem("access_token");
+    //   if (!authToken) {
+    //     throw new Error("Authentication token missing");
+    //   }
+
+    // const response = await fetch("http://localhost:8000/devices", {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${authToken}`
+    //   },
+    //   body: JSON.stringify({
+    //     device_type: deviceType,
+    //     location_name: location
+    //   })
+    // });
+
+    // const result = await response.json();
+
+    // if (!response.ok) {
+    //   throw new Error(result.detail || "Failed to create device");
+    // }
+
+    //     const response = await axiosInstance.post("/devices", {
+    //       device_type: deviceType,
+    //       location_name: location,
+    //     });
+    //     if (onDeviceCreated) {
+    //       onDeviceCreated(response.data);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error creating device:", error);
+    //     if (error.response?.data?.detail) {
+    //       throw new Error(error.response.data.detail);
+    //     } else {
+    //       throw new Error("Failed to create device");
+    //     }
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
   };
 
   return (
@@ -60,7 +85,9 @@ export default function AddButton({ onDeviceCreated }) {
         width={10}
         onClick={() => setIsDialogOpen(true)}
         aria-label="Add device"
-      ><FaPlus /></IconButton>
+      >
+        <FaPlus />
+      </IconButton>
 
       <AddDeviceDialog
         isOpen={isDialogOpen}

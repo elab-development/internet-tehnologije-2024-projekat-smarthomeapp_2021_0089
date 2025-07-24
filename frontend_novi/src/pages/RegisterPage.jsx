@@ -1,12 +1,6 @@
 import { useState } from "react";
-import {
-  Flex,
-  Heading,
-  Input,
-  Button,
-  Text,
-  Link
-} from "@chakra-ui/react";
+import { Flex, Heading, Input, Button, Text, Link } from "@chakra-ui/react";
+import axios from "axios";
 
 function Register() {
   const [name, setName] = useState("");
@@ -20,32 +14,24 @@ function Register() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8000/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        "http://localhost:8000/users/register",
+        {
           name,
           lastname,
           mail: email,
           password,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Registration failed");
-      }
+        }
+      );
 
       setSuccess(true);
       setError(null);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.detail || err.message);
     }
   };
 
-return (
+  return (
     <Flex
       h="100vh"
       alignItems="center"
@@ -64,7 +50,7 @@ return (
         bg="rgba(255, 255, 255, 0.1)"
         backdropFilter="blur(10px)"
         border="1px solid rgba(255, 255, 255, 0.2)"
-        w={{ base: '90%', md: '400px' }}
+        w={{ base: "90%", md: "400px" }}
       >
         <Heading mb={6} color="#6D2323">
           Register
@@ -76,7 +62,7 @@ return (
         )}
         {success && (
           <Text textAlign="center" color="red.500" mb={4}>
-            {success}{' '}
+            {success}{" "}
             <Link color="#FEF9E1" href="/login">
               Successful registration! Go to Login.
             </Link>
@@ -92,7 +78,7 @@ return (
           required
           bg="whiteAlpha.800"
           color="black"
-          _placeholder={{ color: 'gray.500' }}
+          _placeholder={{ color: "gray.500" }}
         />
         <Input
           placeholder="Last Name"
@@ -104,7 +90,7 @@ return (
           required
           bg="whiteAlpha.800"
           color="black"
-          _placeholder={{ color: 'gray.500' }}
+          _placeholder={{ color: "gray.500" }}
         />
         <Input
           placeholder="johndoe@gmail.com"
@@ -116,7 +102,7 @@ return (
           required
           bg="whiteAlpha.800"
           color="black"
-          _placeholder={{ color: 'gray.500' }}
+          _placeholder={{ color: "gray.500" }}
         />
         <Input
           placeholder="* Password *"
@@ -128,13 +114,13 @@ return (
           required
           bg="whiteAlpha.800"
           color="black"
-          _placeholder={{ color: 'gray.500' }}
+          _placeholder={{ color: "gray.500" }}
         />
         <Button type="submit" colorPalette="orange" variant="subtle" mb={8}>
           Register
         </Button>
         <Text textAlign="center" color="#6D2323">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link color="#FEF9E1" href="/login">
             Login here
           </Link>
@@ -142,7 +128,6 @@ return (
       </Flex>
     </Flex>
   );
-
 }
 
 export default Register;

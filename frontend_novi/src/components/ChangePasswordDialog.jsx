@@ -8,6 +8,7 @@ import {
   Alert,
   Button,
 } from "@chakra-ui/react";
+import axios from "axios";
 
 const ChangePasswordDialog = ({ isOpen, onClose, userEmail }) => {
   const [newPassword, setNewPassword] = useState("");
@@ -28,26 +29,33 @@ const ChangePasswordDialog = ({ isOpen, onClose, userEmail }) => {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/users/reset-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: userEmail, new_password: newPassword }),
-        }
-      );
+      // const response = await fetch(
+      //   "http://localhost:8000/users/reset-password",
+      //   {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ email: userEmail, new_password: newPassword }),
+      //   }
+      // );
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || "Failed to change password");
-      }
+      // if (!response.ok) {
+      //   const data = await response.json();
+      //   throw new Error(data.detail || "Failed to change password");
+      // }
+      await axios.post("http://localhost:8000/users/reset-password", {
+        //ne koristi se axiosInstance jer nije potrebna autentikacija za ovu rutu
+        email: userEmail,
+        new_password: newPassword,
+      });
 
       setSuccess(true);
       setTimeout(() => {
         resetAndClose();
       }, 2000);
     } catch (err) {
-      setError(err.message);
+      setError(
+        err.response?.data?.detail || err.message || "Failed to change password"
+      );
     }
   };
 
