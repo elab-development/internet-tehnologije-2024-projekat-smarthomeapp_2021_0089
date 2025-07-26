@@ -1,6 +1,6 @@
 ![Logo](images/logo.png)
 # SmartHome aplikacija
-SmartHome je web aplikacija namenjena korisnicima koji žele da lako i daljinski upravljaju pametnim uređajima u svom domu. Omogućava jednostavno upravljanje uređajima i pregled lokacija kroz intuitivan interfejs.
+SmartHome je web aplikacija pomoću koje korisnicu mogu da upravljaju pametnim uređajima u svom domu.
 
 # Tehnologije i pokretanje aplikacije
 
@@ -24,10 +24,9 @@ Instalirati Node.js i npm (node paket menadzer). Pogledati sledeći link: https:
 
 1. Prijava i registracija korisnika putem e-maila i lozinke sa JWT autentifikacijom  
 2. Upravljanje ulogama korisnika (admin, vlasnik, obični korisnici)  
-3. Dodavanje i upravljanje pametnim uređajima  
-4. Prikaz statusa uređaja u realnom vremenu   
-5. Admin panel za dodelu uloga i lokacija  
-6. Web interfejs za pristup funkcionalnostima sistema
+3. Dodavanje, izmena i brisanje pametnih uređaja   
+4. Admin panel za dodelu uloga i lokacija
+5. Web interfejs za pristup funkcionalnostima sistema
 
 # Izgled aplikacije
 
