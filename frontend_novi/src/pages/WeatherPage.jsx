@@ -59,27 +59,6 @@ export default function WeatherPage() {
     fetchWeather();
   }, []);
 
-  // useEffect(() => {
-  //   // uzima grad pomocu ip adrese
-  //   fetch("http://ip-api.com/json/")
-  //     .then((res) => res.json())
-  //     .then((locationData) => {
-  //       const city = locationData.city || "Belgrade";
-  //       // fetchuje sa becka prognozu
-  //       return fetch(`http://localhost:8000/api/weather?city=${city}`);
-  //     })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setWeatherData(data);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       setError("Failed to fetch weather data.");
-  //       setIsLoading(false);
-  //     });
-  // }, []);
-
   if (isLoading) {
     return (
       <Box p={10} textAlign="center">

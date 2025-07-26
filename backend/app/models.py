@@ -35,7 +35,7 @@ class Device(Base):
     location_id: int = Column(Integer,ForeignKey("locations.location_id",ondelete="CASCADE"),nullable=False)
     status: str=Column(String(80))
     temperature: float =Column(Float)
-    device_type: str = Column(String(80))  # Column to distinguish subclasses
+    device_type: str = Column(String(80))  # kolona za razlikovanje podkalasa
     __mapper_args__ = {
         'polymorphic_identity': 'device', 
         'polymorphic_on': device_type    
@@ -51,27 +51,27 @@ class Location(Base):
 
 
 class Thermostat(Device):
-    __mapper_args__ = {'polymorphic_identity': 'thermostat'}  # Subclass identifier
-    #temperature: float =Column(Float, nullable=False)
-    #status: str=Column(String,nullable=False) #heating,cooling,idle
+    __mapper_args__ = {'polymorphic_identity': 'thermostat'}  # identifikator podklase
+    #temperature: float =Column(Float)
+    #status: str=Column(String) #heating,cooling,idle
 
 class LightBulb(Device):
-    __mapper_args__ = {'polymorphic_identity': 'lightbulb'}  # Subclass identifier
+    __mapper_args__ = {'polymorphic_identity': 'lightbulb'}  
     brightness: float= Column(Float)
     color: str=Column(String(80)) #red,purple,yellow,white,green,blue
-    #status: str=Column(String,nullable=False) #on,off
+    #status: str=Column(String) #on,off
 
 class DoorLock(Device):
     __mapper_args__ = {'polymorphic_identity': 'doorlock'} 
-    #status: str=Column(String,nullable=False) #locked,unlocked
+    #status: str=Column(String) #locked,unlocked
 
 class Oven(Device):
-    __mapper_args__ = {'polymorphic_identity': 'oven'} 
-    # temperature: float =Column(Float, nullable=False)
+    __mapper_args__ = {'polymorphic_identity': 'oven'}
+    # temperature: float =Column(Float)
 
 class AirPurifier(Device):
     __mapper_args__ = {'polymorphic_identity': 'airpurifier'}
-    #status: str=Column(String,nullable=False) #on,off
+    #status: str=Column(String) #on,off
     air_quality: float = Column(Float)  # Optional: Air quality metric
     fan_speed: int = Column(Integer) # 1 = low, 2 = medium, 3 = high
 

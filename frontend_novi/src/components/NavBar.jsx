@@ -30,27 +30,6 @@ export default function NavBar() {
       console.error("Logout failed", err);
     }
   };
-  // const handleLogout = async () => {
-  //   const token = localStorage.getItem("access_token");
-
-  //   try {
-  //     await fetch("http://localhost:8000/users/logout", {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     // ocisti localStorage
-  //     localStorage.removeItem("access_token");
-  //     localStorage.removeItem("user");
-
-  //     // navigacija na login
-  //     navigate("/login");
-  //   } catch (err) {
-  //     console.error("Logout failed", err);
-  //   }
-  // };
 
   return (
     <Flex as="nav" p={5} alignItems="center" wrap={"wrap"} rowGap={"5"}>

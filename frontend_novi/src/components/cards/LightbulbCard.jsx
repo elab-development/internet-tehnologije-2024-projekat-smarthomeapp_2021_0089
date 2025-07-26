@@ -19,12 +19,6 @@ function LightbulbCard({ device, onDeleted }) {
   const [brightness, setBrightness] = useState(device.brightness);
   const [isOn, setIsOn] = useState(device.status === "on");
 
-  // useEffect(() => {
-  //   setColor(device.color || "rgba(255, 255, 0, 1)");
-  //   setBrightness(device.brightness ?? 100);
-  //   setIsOn(device.status === "on");
-  // }, [device]);
-
   const handleToggle = (checked) => {
     setIsOn(checked);
     updateDevice(device.device_id, {

@@ -17,6 +17,7 @@ function Devices() {
   const token = localStorage.getItem("access_token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  //fetchovanje resursa
   const { devices, setDevices } = useDevices(
     token,
     deviceTypeFilter,
@@ -24,6 +25,8 @@ function Devices() {
   );
   const { locations } = useLocations(token);
 
+
+  //paginacija
   const [currentPage, setCurrentPage] = useState(1);
   const devicesPerPage = 6;
 

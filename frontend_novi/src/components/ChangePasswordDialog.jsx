@@ -29,19 +29,6 @@ const ChangePasswordDialog = ({ isOpen, onClose, userEmail }) => {
     }
 
     try {
-      // const response = await fetch(
-      //   "http://localhost:8000/users/reset-password",
-      //   {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ email: userEmail, new_password: newPassword }),
-      //   }
-      // );
-
-      // if (!response.ok) {
-      //   const data = await response.json();
-      //   throw new Error(data.detail || "Failed to change password");
-      // }
       await axios.post("http://localhost:8000/users/reset-password", {
         //ne koristi se axiosInstance jer nije potrebna autentikacija za ovu rutu
         email: userEmail,

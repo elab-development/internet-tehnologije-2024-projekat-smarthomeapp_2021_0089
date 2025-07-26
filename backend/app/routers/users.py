@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from db import get_db
 import models,schemas,utils
 from sqlalchemy.orm import Session
-from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
@@ -18,7 +17,7 @@ router = APIRouter(
 )
 
 
-
+# vraca sve usere
 @router.get("/", response_model=List[schemas.UserResponse])
 def get_all_users(db: Session = Depends(get_db), admin_user: models.User = Depends(require_admin)):
     users = db.query(models.User)\

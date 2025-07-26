@@ -7,9 +7,6 @@ import { updateDevice } from "../../api/deviceApi";
 function DoorlockCard({ device, onDeleted }) {
   const [status, setStatus] = useState(device.status);
 
-  //const handleToggle = () => {
-  // setStatus((prev) => (prev === "unlocked" ? "locked" : "unlocked"));
-  // };
   const handleToggle = () => {
     const newStatus = status === "unlocked" ? "locked" : "unlocked";
     setStatus(newStatus);

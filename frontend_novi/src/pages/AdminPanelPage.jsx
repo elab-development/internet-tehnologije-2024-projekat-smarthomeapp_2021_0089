@@ -63,62 +63,6 @@ export default function AdminPanel() {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       const token = localStorage.getItem("access_token");
-
-  //       const [rolesRes, locationsRes, usersRes] = await Promise.all([
-  //         fetch("http://localhost:8000/users/roles", {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }),
-  //         fetch("http://localhost:8000/locations/", {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }),
-  //         fetch("http://localhost:8000/users/", {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }),
-  //       ]);
-
-  //       if (!rolesRes.ok || !locationsRes.ok || !usersRes.ok) {
-  //         throw new Error("Failed to load data");
-  //       }
-
-  //       const rolesData = await rolesRes.json();
-  //       const locationsData = await locationsRes.json();
-  //       const usersData = await usersRes.json();
-
-  //       setRoles(Array.isArray(rolesData) ? rolesData : []);
-  //       setLocations(Array.isArray(locationsData) ? locationsData : []);
-  //       setUsers(
-  //         Array.isArray(usersData)
-  //           ? usersData.map((user) => ({
-  //               id: user.user_id,
-  //               name: `${user.name} ${user.lastname}`,
-  //               email: user.mail,
-  //               roleId: user.role_id,
-  //               roleName: user.role?.name || "",
-  //               locations: (user.locations || []).map((loc) => loc.name),
-  //               locationIds: (user.locations || []).map(
-  //                 (loc) => loc.location_id
-  //               ),
-  //             }))
-  //           : []
-  //       );
-  //       setLoading(false);
-  //     } catch (err) {
-  //       setError(err.message || "Unknown error");
-  //       setLoading(false);
-  //     }
-  //   }
-  //   fetchData();
-  // }, []);
 
   // menja rolu usera lokalno
   const updateUserRole = (userId, roleId) => {
@@ -184,47 +128,6 @@ export default function AdminPanel() {
     }
   };
 
-  // const saveUser = async (user) => {
-  //   setSavingUserId(user.id);
-  //   setError(null);
-  //   try {
-  //     const token = localStorage.getItem("access_token");
-
-  //     // update role
-  //     const roleResponse = await fetch(
-  //       `http://localhost:8000/users/${user.id}/role`,
-  //       {
-  //         method: "PUT",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: JSON.stringify({ role_id: user.roleId }),
-  //       }
-  //     );
-  //     if (!roleResponse.ok) throw new Error("Failed to update role");
-
-  //     // update locations
-  //     const locationsResponse = await fetch(
-  //       `http://localhost:8000/users/${user.id}/locations`,
-  //       {
-  //         method: "PUT",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: JSON.stringify({ location_ids: user.locationIds }),
-  //       }
-  //     );
-  //     if (!locationsResponse.ok) throw new Error("Failed to update locations");
-
-  //     alert(`User ${user.name} saved successfully`);
-  //   } catch (err) {
-  //     setError(err.message || "Failed to save user");
-  //   } finally {
-  //     setSavingUserId(null);
-  //   }
-  // };
 
   if (loading) return <p>Loading...</p>;
 
@@ -308,7 +211,7 @@ export default function AdminPanel() {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Email</th> {/* New column */}
+            <th>Email</th>
             <th>Role</th>
             <th>Locations</th>
             <th>Action</th>

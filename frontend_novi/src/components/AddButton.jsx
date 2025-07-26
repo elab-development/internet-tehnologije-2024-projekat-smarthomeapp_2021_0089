@@ -28,48 +28,6 @@ export default function AddButton({ onDeviceCreated }) {
     } finally {
       setIsLoading(false);
     }
-
-    // try {
-    //   const authToken = localStorage.getItem("access_token");
-    //   if (!authToken) {
-    //     throw new Error("Authentication token missing");
-    //   }
-
-    // const response = await fetch("http://localhost:8000/devices", {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${authToken}`
-    //   },
-    //   body: JSON.stringify({
-    //     device_type: deviceType,
-    //     location_name: location
-    //   })
-    // });
-
-    // const result = await response.json();
-
-    // if (!response.ok) {
-    //   throw new Error(result.detail || "Failed to create device");
-    // }
-
-    //     const response = await axiosInstance.post("/devices", {
-    //       device_type: deviceType,
-    //       location_name: location,
-    //     });
-    //     if (onDeviceCreated) {
-    //       onDeviceCreated(response.data);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error creating device:", error);
-    //     if (error.response?.data?.detail) {
-    //       throw new Error(error.response.data.detail);
-    //     } else {
-    //       throw new Error("Failed to create device");
-    //     }
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
   };
 
   return (

@@ -73,56 +73,6 @@ const ExportDialog = ({ isOpen, onClose }) => {
     }
   };
 
-  // const handleExport = async () => {
-  //   if (!validate()) return;
-
-  //   setIsLoading(true);
-
-  //   try {
-  //     const token = localStorage.getItem("access_token");
-  //     if (!token) throw new Error("Authentication token missing");
-
-  //     const response = await fetch(
-  //       `http://localhost:8000/devices/export/?format=${selectedFormat[0]}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       const data = await response.json();
-  //       throw new Error(data.detail || "Failed to export data");
-  //     }
-
-  //     const blob = await response.blob();
-  //     const filename =
-  //       selectedFormat[0] === "csv" ? "devices.csv" : "devices.pdf";
-
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = filename;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     a.remove();
-  //     window.URL.revokeObjectURL(url);
-
-  //     setShowSuccess(true);
-
-  //     setTimeout(() => {
-  //       resetForm();
-  //       onClose();
-  //     }, 2000);
-  //   } catch (error) {
-  //     setError(true);
-  //     console.error(error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   const resetForm = () => {
     setSelectedFormat([]);
     setError(false);

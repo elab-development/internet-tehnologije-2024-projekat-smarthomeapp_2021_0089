@@ -17,40 +17,7 @@ export default function DeleteButton({ deviceId, onDeleted }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
-  //   const handleDelete = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       const authToken = localStorage.getItem("access_token");
-  //       if (!authToken) {
-  //         throw new Error("Authentication token missing");
-  //       }
 
-  //       const response = await fetch(
-  //         `http://localhost:8000/devices/${deviceId}`,
-  //         {
-  //           method: "DELETE",
-  //           headers: {
-  //             Authorization: `Bearer ${authToken}`,
-  //           },
-  //         }
-  //       );
-
-  //       if (!response.ok) {
-  //         const result = await response.json();
-  //         throw new Error(result.detail || "Failed to delete device");
-  //       }
-
-  //       setSuccess(true);
-  //       setTimeout(() => {
-  //         if (onDeleted) onDeleted();
-  //       }, 2000); // sačekaj 2 sekunde
-  //     } catch (err) {
-  //       console.error("Delete failed:", err);
-  //       setError(err.message || "Unexpected error");
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
   const handleDelete = async () => {
     setIsLoading(true);
     try {
